@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>DocuGen Research</title>
+<style>
+  :root{
+    --primary: #336F51;
+    --primary-light: #4a8a6a;
+    --primary-dark: #2a5a43;
+    --ink: #1f2d3d;
+    --muted: #6c7a89;
+    --border: #e0e5ea;
+    --hair: #eceff3;
+    --bg: #f5f6f7;
+    --card: #fff;
+    --soft: #f8f9fb;
+    --ok: #1f7a4d;
+    --warn: #8a5a00;
+    --info: #2d5699;
+    --shadow: 0 6px 18px rgba(20,26,38,.08);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Ubuntu,Cantarell,sans-serif;background:var(--bg);color:var(--ink)}
+
+  /* ===== App Chrome ===== */
+  .header {
+    background: #fff;
+    padding: 0 32px;
+    height: 72px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    box-shadow: var(--shadow);
+  }
+
+  .logo-section {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .logo {
+    width: 44px;
+    height: 44px;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 800;
+    font-size: 18px;
+  }
+
+  .brand-info h1 {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.2;
+  }
+
+  .brand-info .subtitle {
+    font-size: 12px;
+    color: var(--muted);
+    font-weight: 500;
+  }
+
+  .header-title {
+    font-size: 28px;
+    font-weight: 300;
+    color: var(--primary);
+    letter-spacing: -0.5px;
+  }
+
+  .nav-actions{display:flex;gap:18px;margin-left:auto;color:var(--ink);font-size:14px}
+  .nav-item{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;cursor:pointer}
+  .nav-item:hover{background:rgba(51, 111, 81,.08);color:var(--primary)}
+  .nav-icon{width:18px;height:18px}
+
+  .secondary-nav{background:#fff;border-bottom:1px solid var(--border);padding:0 32px;height:48px;display:flex;align-items:center;justify-content:space-between;position:fixed;left:0;right:0;top:72px;z-index:999}
+  .secondary-links{display:flex;gap:32px;font-size:14px}
+  .secondary-link{cursor:pointer;padding:12px 0}
+  .secondary-link:hover{color:var(--primary)}
+  .auto-pill{border:1px solid var(--primary);color:var(--primary);padding:8px 16px;border-radius:24px;font-weight:800;font-size:12px;display:flex;align-items:center;gap:8px}
+
+  /* Compact context controls */
+  .section.ctx-compact .ctx-grid{display:grid;grid-template-columns:1fr;gap:8px;margin-top:6px}
+  .section.ctx-compact .ctx-block{padding:8px;border:1px solid var(--border);border-radius:8px;background:#fff}
+  .section.ctx-compact .ctx-label{font-size:11px;font-weight:700;color:#4a5866;margin-bottom:6px}
+  .section.ctx-compact .seg{display:inline-flex;gap:4px;background:#f6f7f9;border:1px solid var(--border);border-radius:14px;padding:2px}
+  .section.ctx-compact .seg-option{font-size:11px;padding:4px 8px;border-radius:12px;border:0;background:transparent;cursor:pointer}
+  .section.ctx-compact .seg-option.is-active{background:var(--primary);color:#fff;box-shadow:0 0 0 1px var(--primary) inset}
+  .section.ctx-compact .seg-option:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+  .ctx-summary{margin-top:6px;font-size:11px;color:#6c7a86}
+
+  /* Hero */
+  .research-banner{
+    margin-top:120px;
+    background:linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+    color:#fff;
+    padding:24px 32px;
+    position:relative;
+    overflow:hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .research-banner::after {
+    content: '';
+    position: absolute;
+    right: -80px;
+    top: -40px;
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .research-banner h2{
+    font-weight:500;
+    font-size:20px;
+    position:relative;
+    z-index:2;
+  }
+
+  /* Shell - Flipped to docs left, generation right */
+  .shell{max-width:1200px;margin:18px auto;border:1px solid var(--hair);border-radius:16px;overflow:hidden;background:#fff;box-shadow:var(--shadow);display:grid;grid-template-columns:1fr 320px}
+  .panel-head{padding:14px 16px;background:var(--soft);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+  .panel-title{font-weight:800}
+  .btn{border:1px solid rgba(51, 111, 81,.28);background:rgba(51, 111, 81,.08);color:var(--primary);border-radius:8px;padding:8px 12px;cursor:pointer}
+  .btn.primary{background:var(--primary);color:#fff;border-color:var(--primary)}
+  .btn.ghost{background:#fff;border:1px dashed var(--border);color:#3b4b63}
+  .left{background:#fff;border-right:1px solid var(--border);display:flex;flex-direction:column}
+  .right{background:var(--soft);display:flex;flex-direction:column}
+  .left-body{padding:12px;overflow:auto}
+  .right-body{padding:12px;overflow:auto}
+
+  /* Left: Documents */
+  .filters{display:flex;gap:8px;align-items:center}
+.chip{border:1px solid var(--border);background:#fff;border-radius:999px;padding:6px 10px;font-size:12px;cursor:pointer}
+.chip.active{border-color:var(--primary);color:var(--primary);box-shadow:0 0 0 2px rgba(51, 111, 81,.12)}
+
+.doc{
+  background:#fff;
+  border-bottom:1px solid var(--hair);
+  padding:16px 0;
+  margin-bottom:0;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  transition:all 0.2s ease;
+}
+
+.doc:hover{
+  background:var(--soft);
+  margin:0 -12px;
+  padding-left:12px;
+  padding-right:12px;
+  border-radius:8px;
+}
+
+.doc:last-child{
+  border-bottom:none;
+}
+
+.doc-info{
+  flex:1;
+}
+
+.doc .tt{
+  font-weight:600;
+  font-size:14px;
+  color:var(--ink);
+  margin-bottom:4px;
+}
+
+.doc .meta{
+  font-size:12px;
+  color:var(--muted);
+  font-weight:500;
+}
+
+.doc .actions{
+  display:flex;
+  gap:12px;
+  margin-top:0;
+}
+
+.doc-action{
+  color:var(--primary);
+  text-decoration:none;
+  cursor:pointer;
+  font-size:12px;
+  font-weight:600;
+  padding:4px 8px;
+  border-radius:6px;
+  transition:all 0.2s ease;
+  border:none;
+  background:none;
+}
+
+.doc-action:hover{
+  background:rgba(51, 111, 81, 0.1);
+  color:var(--primary-dark);
+}
+
+.empty{color:#627085;font-size:12px}
+.searchBox{padding:12px}
+.searchBox input{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:10px;background:#fff;font-size:13px}
+
+  /* Right: Generation */
+  .console{padding:14px 16px;overflow:auto}
+  .section{background:#fff;border:1px solid var(--hair);border-radius:12px;padding:12px;margin-bottom:12px}
+  .section h3{font-size:14px;margin-bottom:8px}
+  .row{display:flex;gap:12px;align-items:center}
+  .field{flex:1}
+  select, textarea{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:10px;background:#fff;font-size:13px}
+  textarea{min-height:88px;resize:vertical}
+  .hint{font-size:12px;color:var(--muted)}
+
+  @media (max-width:1000px){.shell{grid-template-columns:1fr}.right{display:none}}
+
+/* Toast Notification */
+.toast-notification {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #fff;
+  border: 1px solid var(--hair);
+  border-radius: 12px;
+  box-shadow: 0 8px 28px rgba(0,0,0,.15);
+  padding: 16px;
+  display: none;
+  z-index: 1001;
+  min-width: 280px;
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.toast-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.toast-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--hair);
+  border-left-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.toast-text {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.toast-close {
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: 600;
+  padding: 0;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.toast-close:hover {
+  background: var(--soft);
+  color: var(--ink);
+}
+</style>
+</head>
+<body>
+  <!-- Header -->
+  <div class="header">
+    <div class="logo-section">
+      <div class="logo">DG</div>
+      <div class="brand-info">
+        <h1>DocuGen</h1>
+        <div class="subtitle">By Doculabs</div>
+      </div>
+    </div>
+    <h1 class="header-title">Research</h1>
+  </div>
+
+  <!-- Secondary Nav -->
+  <nav class="secondary-nav">
+    <div class="secondary-links">
+      <div class="secondary-link">Dashboard</div>
+      <div class="secondary-link">Advisor</div>
+      <div class="secondary-link">Research</div>
+      <div class="secondary-link">Chat</div>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <header class="research-banner">
+    <h2>Agentic Research</h2>
+  </header>
+
+  <!-- Shell -->
+  <section class="shell">
+    <!-- Left: Documents -->
+    <aside class="left">
+      <div class="panel-head">
+        <span class="panel-title">Research Library</span>
+        <div class="filters">
+          <button class="chip active" data-filter="All">All</button>
+          <button class="chip" data-filter="Markets">Markets</button>
+          <button class="chip" data-filter="Sectors">Sectors</button>
+          <button class="chip" data-filter="Assets">Assets</button>
+        </div>
+      </div>
+      <div class="left-body">
+        <div class="searchBox" style="padding:0 0 12px 0">
+          <input id="docSearch" placeholder="Search documents…"/>
+        </div>
+        <div id="docsPane"></div>
+      </div>
+    </aside>
+
+    <!-- Right: Generation -->
+    <main class="right">
+      <div class="panel-head"><span class="panel-title" id="centerTitle">Create Research</span></div>
+      <div class="console">
+        <div class="section">
+          <h3>Research Area & Topic</h3>
+          <div class="row">
+            <div class="field">
+              <select id="area">
+                <option value="" selected>Select area…</option>
+                <option value="Markets">Markets</option>
+                <option value="Sectors">Sectors</option>
+                <option value="Assets">Assets</option>
+                <option value="How">Concepts</option>
+              </select>
+            </div>
+            <div class="field">
+              <select id="narrow" disabled>
+                <option value="">Choose a topic…</option>
+              </select>
+            </div>
+            <button class="btn primary" id="createBtn" disabled>Generate</button>
+          </div>
+          <div class="hint" style="margin-top:6px"></div>
+        </div>
+
+        <!-- Additional Context -->
+        <div class="section ctx-compact" id="ctxSection">
+          <div class="ctx-head"><h3>Research Parameters</h3></div>
+          <div class="ctx-grid">
+            <div class="ctx-block">
+              <div class="ctx-label">Depth</div>
+              <div class="seg" role="radiogroup" aria-label="Depth">
+                <button type="button" class="seg-option is-active" data-group="depth" data-value="overview">Overview</button>
+                <button type="button" class="seg-option" data-group="depth" data-value="targeted">Targeted</button>
+                <button type="button" class="seg-option" data-group="depth" data-value="deep">Deep Focus</button>
+              </div>
+            </div>
+            <div class="ctx-block">
+              <div class="ctx-label">Rigor</div>
+              <div class="seg" role="radiogroup" aria-label="Rigor">
+                <button type="button" class="seg-option" data-group="rigor" data-value="quick">Quick</button>
+                <button type="button" class="seg-option is-active" data-group="rigor" data-value="standard">Thorough</button>
+                <button type="button" class="seg-option" data-group="rigor" data-value="exhaustive">Extensive</button>
+              </div>
+            </div>
+            <div class="ctx-block">
+              <div class="ctx-label">Focus</div>
+              <div class="seg" role="radiogroup" aria-label="Lens">
+                <button type="button" class="seg-option is-active" data-group="lens" data-value="investment">Investment Research</button>
+                <button type="button" class="seg-option" data-group="lens" data-value="educational">Educational Summary</button>
+                <button type="button" class="seg-option" data-group="lens" data-value="technical">Technical Analysis</button>
+              </div>
+            </div>
+          </div>
+          <div id="ctxSummary" class="ctx-summary">Overview • Thorough • Investment Research</div>
+        </div>
+      </div>
+    </main>
+  </section>
+
+<!-- Toast notification -->
+<div id="toastNotification" class="toast-notification">
+  <div class="toast-content">
+    <div class="toast-spinner"></div>
+    <div class="toast-text">Generating Research...</div>
+    <button class="toast-close" id="toastClose">×</button>
+  </div>
+</div>
+
+<!-- ===== Scripts ===== -->
+<script>
+/* ===== Demo data ===== */
+const STEPS = ["Queued","Fetching","Analyzing","Drafting","Finalizing"];
+const DEMO = [
+  { id:"r-001a", title:"Energy Sector Overview", area:"Sectors", topic:"Energy",
+    status:"Complete", step:5, progress:100, created:"2025-04-08",
+    docs:[{id:"d-100",title:"Energy Sector Overview", pages:9, when:"Apr 9, 2025"}] },
+  { id:"r-001c", title:"Stagflation Deep Research", area:"Markets", topic:"Macro Concepts",
+    status:"Complete", step:5, progress:100, created:"2025-04-08",
+    docs:[{id:"d-102",title:"Stagflation Deep Research", pages:7, when:"Apr 9, 2025"}] },
+  { id:"r-003", title:"US Macro Snapshot", area:"Markets", topic:"US Macro Outlook",
+    status:"Complete", step:5, progress:100, created:"2025-03-28",
+    docs:[{id:"d-103",title:"US Macro Snapshot", pages:10, when:"Mar 29, 2025"}] }
+];
+
+const OPTIONS = {
+  Markets: ["Employment","Credit","Commodities","Futures","Inflation","GDP","Rates"],
+  Sectors: ["Technology","Healthcare","Energy","Financials","Industrials","Consumer","Utilities"],
+  Assets: ["NVDA (Equity)","TSM (Equity)","ASML (Equity)","MSFT (Equity)", "AAPL (Equity)", "IONQ (Equity)","SPGI (Equity)","CME (Equity)","VTI (ETF)","VEA (ETF)","VWO (ETF)","BND (ETF)"],
+  How: ["ETFs work","Semiconductor Supply Chain","Taxation","Treasury bills","Options Basics","Debt Leveraging"]
+};
+
+/* ===== Helpers ===== */
+const qs = s=>document.querySelector(s);
+const qsa = s=>[...document.querySelectorAll(s)];
+const TAX_DOC_TITLE = "Deep Research TQE Taxation"; 
+const TAX_DOC_PAGES = 10;                             
+
+/* ===== Center: selector + status ===== */
+const areaSel = qs('#area');
+const topicSel = qs('#narrow');
+const createBtn = qs('#createBtn');
+const centerTitle = qs('#centerTitle');
+
+const KEYMAP = {"Individual Assets":"Assets","How Things Work":"How"};
+
+areaSel.onchange = () => {
+  topicSel.innerHTML = '<option value="">Choose a topic…</option>';
+  const key = KEYMAP[areaSel.value] || areaSel.value;
+  const opts = OPTIONS[key] || [];
+  opts.forEach(o => topicSel.add(new Option(o, o)));
+  topicSel.disabled = !opts.length;
+  createBtn.disabled = true;
+};
+if (areaSel.value) areaSel.dispatchEvent(new Event('change'));
+topicSel.onchange = ()=> createBtn.disabled = !(areaSel.value && topicSel.value);
+
+createBtn.onclick = ()=>{
+  const item = {
+    id:'r-'+(Math.random()*1e5|0),
+    title: `${topicSel.value}`,
+    area: areaSel.value,
+    topic: topicSel.value,
+    status:'Generating',
+    step:0, progress:0,
+    created: new Date().toISOString().slice(0,10),
+    docs:[]
+  };
+  DEMO.unshift(item);
+  drawDocs();
+  startDemoProgress(item);
+};
+
+//Tax Doc
+function finalizeItem(item){
+  const isTaxationRun =
+    (item.area === "How" || item.area === "How Things Work") &&
+    /taxation/i.test(item.topic || "");
+  
+  const isIONQRun =
+    item.area === "Assets" &&
+    /ionq/i.test(item.topic || "");
+
+  if (isTaxationRun) {
+    item.docs = [{
+      id: 'd-' + (Math.random()*1e5|0),
+      title: TAX_DOC_TITLE,
+      pages: TAX_DOC_PAGES,
+      when: new Date().toDateString().slice(4)
+    }];
+  } else if (isIONQRun) {
+    item.docs = [{
+      id: 'd-' + (Math.random()*1e5|0),
+      title: "IONQ Deep Research",
+      pages: 8,
+      when: new Date().toDateString().slice(4)
+    }];
+  } else {
+    // fallback demo doc (unchanged)
+    item.docs = [{
+      id:'d-'+(Math.random()*1e5|0),
+      title:`DEEP RESEARCH: ${item.title}`,
+      pages:12+((Math.random()*8)|0),
+      when:new Date().toDateString().slice(4)
+    }];
+  }
+}
+
+/* ===== Status simulation with toast ===== */
+let tickTimer=null;
+function startDemoProgress(item){
+  clearInterval(tickTimer);
+  const toast = document.getElementById('toastNotification');
+  toast.style.display = 'block';
+  updateToastStatus(item);
+  
+  tickTimer = setInterval(()=>{
+    if(item.status==="Complete") return clearInterval(tickTimer);
+
+    item.progress = Math.min(item.progress + Math.random()*7+3, 99);
+    item.step = Math.min(Math.floor(item.progress/25), 4);
+
+    if(item.progress >= 99){
+      item.status = "Complete";
+      item.step = 5;
+      item.progress = 100;
+      finalizeItem(item);
+      clearInterval(tickTimer);
+      drawDocs();
+      
+      // Show completion then hide
+      updateToastStatus(item);
+      setTimeout(() => {
+        toast.style.display = 'none';
+        // Reset form
+        areaSel.value = "";
+        topicSel.innerHTML = '<option value="">Choose a topic…</option>';
+        topicSel.disabled = true;
+        createBtn.disabled = true;
+      }, 2000);
+    }
+
+    updateToastStatus(item);
+  }, 900);
+}
+
+function updateToastStatus(p){
+  const toastText = document.querySelector('.toast-text');
+  const toastSpinner = document.querySelector('.toast-spinner');
+  
+  if(p.status === "Complete") {
+    toastSpinner.style.display = 'none';
+    toastText.textContent = 'Research Complete!';
+  } else {
+    toastText.textContent = 'Generating Research...';
+  }
+}
+
+// Toast close button
+document.getElementById('toastClose').onclick = () => {
+  clearInterval(tickTimer);
+  const idx = DEMO.findIndex(x=>x.status!=="Complete");
+  if(idx>-1) DEMO.splice(idx,1);
+  drawDocs(); 
+  document.getElementById('toastNotification').style.display = 'none';
+  // Reset form
+  areaSel.value = "";
+  topicSel.innerHTML = '<option value="">Choose a topic…</option>';
+  topicSel.disabled = true;
+  createBtn.disabled = true;
+};
+
+/* ===== Left: docs ===== */
+const docsPane = qs('#docsPane');
+const docSearch = qs('#docSearch');
+const chips = qsa('.chip');
+
+function gatherDocs(){
+  const docs=[];
+  DEMO.forEach(p=> (p.docs||[]).forEach(d=> docs.push({...d, area:p.area, topic:p.topic, parent:p.title})));
+  return docs.sort((a,b)=> (b.when||"").localeCompare(a.when||""));
+}
+let docFilter = "All";
+
+/* ==== VIEWER + PATHS ==== */
+const DOC_DIR = './docs';
+
+function fileUrlFromTitle(title){
+  const base = `${DOC_DIR}/${title}.pdf`;
+  const bust = `t=${Date.now()}`;
+  return `${base}?${bust}#page=1&zoom=page-fit`;
+}
+
+function openViewer(url, title){
+  const dlg = document.getElementById('viewer');
+  document.getElementById('viewerTitle').textContent = title || 'Document';
+  const frame = document.getElementById('viewerFrame');
+  frame.src = url + '#page=1';
+  dlg.showModal();
+}
+
+function drawDocs(){
+  const needle = (docSearch.value||"").toLowerCase();
+  const docs = gatherDocs().filter(d=>{
+    const matchFilter = (docFilter==="All") || d.area===docFilter;
+    const matchText = [d.title,d.parent,d.topic,d.area].join(' ').toLowerCase().includes(needle);
+    return matchFilter && matchText;
+  });
+
+  docsPane.innerHTML = docs.length ? docs.map(d=>{
+    const url = d.url || fileUrlFromTitle(d.title);
+    return `
+      <div class="doc">
+        <div class="doc-info">
+          <div class="tt">${d.title}</div>
+          <div class="meta">${d.when||""} • ${d.area} • ${d.topic} • ${d.pages} pages</div>
+        </div>
+        <div class="actions">
+          <button class="doc-action view-doc" data-url="${url}" data-title="${d.title}">view</button>
+          <a class="doc-action" href="${url}" download>download</a>
+          <button class="doc-action" onclick="deleteDocument('${d.id}')">delete</button>
+        </div>
+      </div>`;
+  }).join('') : `<div class="empty">No documents match your filters.</div>`;
+}
+
+docsPane.addEventListener('click', (e)=>{
+  const btn = e.target.closest('.view-doc');
+  if(!btn) return;
+  openViewer(btn.dataset.url, btn.dataset.title);
+});
+docSearch.oninput = drawDocs;
+chips.forEach(c=>c.onclick=()=>{ chips.forEach(x=>x.classList.remove('active')); c.classList.add('active'); docFilter=c.dataset.filter; drawDocs(); });
+
+/* ===== Segmented controls ===== */
+function setActiveInSeg(seg, btn){
+  seg.querySelectorAll('.seg-option').forEach(b=>{ b.classList.remove('is-active'); b.setAttribute('aria-checked','false'); });
+  btn.classList.add('is-active'); btn.setAttribute('aria-checked','true');
+}
+document.addEventListener('click', (e)=>{
+  const btn = e.target.closest('.seg-option'); if(!btn) return;
+  const seg = btn.closest('.seg'); if(!seg) return;
+  setActiveInSeg(seg, btn); updateCtxSummary();
+});
+document.addEventListener('keydown', (e)=>{
+  if(!['ArrowLeft','ArrowRight'].includes(e.key)) return;
+  const seg = e.target.closest('.seg'); if(!seg) return;
+  const opts = [...seg.querySelectorAll('.seg-option')];
+  const i = opts.findIndex(o=>o.classList.contains('is-active'));
+  const next = e.key==='ArrowRight' ? (i+1)%opts.length : (i-1+opts.length)%opts.length;
+  setActiveInSeg(seg, opts[next]); opts[next].focus(); updateCtxSummary(); e.preventDefault();
+});
+function getResearchParams(){
+  const out = {};
+  document.querySelectorAll('.seg').forEach(seg=>{
+    const group = seg.querySelector('.seg-option.is-active')?.dataset.group;
+    const value = seg.querySelector('.seg-option.is-active')?.dataset.value;
+    if(group && value) out[group] = value;
+  });
+  return out;
+}
+function updateCtxSummary(){
+  const labels = {overview:'Overview', targeted:'Targeted', deep:'Deep Focus', quick:'Quick', standard:'Thorough', exhaustive:'Extensive', investment:'Investment Research', educational:'Educational Summary', technical:'Technical Analysis'};
+  const ctx = getResearchParams();
+  qs('#ctxSummary').textContent = [ctx.depth, ctx.rigor, ctx.lens].map(v=>labels[v]).filter(Boolean).join(' • ');
+}
+
+/* ===== Init ===== */
+function init(){
+  drawDocs();
+  // Start with blank form
+  centerTitle.textContent = 'Create Research';
+  areaSel.value = ""; 
+  topicSel.innerHTML = `<option value="">Choose a topic…</option>`; 
+  topicSel.disabled = true;
+  createBtn.disabled = true;
+}
+init();
+</script>
+
+<!-- Viewer styles and dialog remain the same -->
+<style>
+  dialog#viewer {
+    width: min(1100px, 95vw);
+    height: min(90vh, 900px);
+    border: 0;
+    border-radius: 12px;
+    padding: 0;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,.28);
+    margin: auto;
+  }
+  dialog::backdrop {
+    background: rgba(0,0,0,.55);
+  }
+  .viewer-head {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    background:var(--ink);
+    color:#fff;
+    padding:10px 14px;
+  }
+  .viewer-title{font-weight:700;font-size:14px}
+  .viewer-close{
+    border:0;
+    background:rgba(255,255,255,0.1);
+    color:#fff;
+    border-radius:8px;
+    padding:6px 10px;
+    cursor:pointer;
+  }
+  .viewer-close:hover{
+    background:rgba(255,255,255,0.15);
+  }
+  #viewerFrame{
+    width:100%;
+    height:calc(100% - 44px);
+    border:0;
+    background:#f5f6f7;
+  }
+</style>
+
+<dialog id="viewer" aria-label="Document viewer">
+  <div class="viewer-head">
+    <div class="viewer-title" id="viewerTitle">Document</div>
+    <button type="button" class="viewer-close" id="closeViewer">Close</button>
+  </div>
+  <iframe id="viewerFrame"></iframe>
+</dialog>
+<script>
+window.addEventListener('DOMContentLoaded', function () {
+  var dlg   = document.getElementById('viewer');
+  var frame = document.getElementById('viewerFrame');
+  var btn   = document.getElementById('closeViewer');
+
+  function closeViewer() {
+    if (frame) frame.src = 'about:blank';
+    if (dlg && dlg.open) dlg.close();
+  }
+
+  if (btn) btn.addEventListener('click', closeViewer);
+
+  dlg.addEventListener('click', function (e) {
+    var r = dlg.getBoundingClientRect();
+    var outside = e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom;
+    if (outside) closeViewer();
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && dlg.open) closeViewer();
+  });
+});
+</script>
+
+</body>
+</html>
