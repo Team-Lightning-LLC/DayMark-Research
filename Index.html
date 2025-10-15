@@ -1,771 +1,2865 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>DocuGen Research</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DocuGen Finance</title>
+<!-- Add marked.js library for markdown parsing -->
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
-  :root{
-    --primary: #336F51;
-    --primary-light: #4a8a6a;
-    --primary-dark: #2a5a43;
-    --ink: #1f2d3d;
-    --muted: #6c7a89;
-    --border: #e0e5ea;
-    --hair: #eceff3;
-    --bg: #f5f6f7;
-    --card: #fff;
-    --soft: #f8f9fb;
-    --ok: #1f7a4d;
-    --warn: #8a5a00;
-    --info: #2d5699;
-    --shadow: 0 6px 18px rgba(20,26,38,.08);
-  }
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Ubuntu,Cantarell,sans-serif;background:var(--bg);color:var(--ink)}
-
-  /* ===== App Chrome ===== */
-  .header {
-    background: #fff;
-    padding: 0 32px;
-    height: 72px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 1000;
-    box-shadow: var(--shadow);
-  }
-
-  .logo-section {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-  }
-
-  .logo {
-    width: 44px;
-    height: 44px;
-    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-weight: 800;
-    font-size: 18px;
-  }
-
-  .brand-info h1 {
-    font-size: 24px;
-    font-weight: 700;
-    color: var(--ink);
-    line-height: 1.2;
-  }
-
-  .brand-info .subtitle {
-    font-size: 12px;
-    color: var(--muted);
-    font-weight: 500;
-  }
-
-  .header-title {
-    font-size: 28px;
-    font-weight: 300;
-    color: var(--primary);
-    letter-spacing: -0.5px;
-  }
-
-  .nav-actions{display:flex;gap:18px;margin-left:auto;color:var(--ink);font-size:14px}
-  .nav-item{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;cursor:pointer}
-  .nav-item:hover{background:rgba(51, 111, 81,.08);color:var(--primary)}
-  .nav-icon{width:18px;height:18px}
-
-  .secondary-nav{background:#fff;border-bottom:1px solid var(--border);padding:0 32px;height:48px;display:flex;align-items:center;justify-content:space-between;position:fixed;left:0;right:0;top:72px;z-index:999}
-  .secondary-links{display:flex;gap:32px;font-size:14px}
-  .secondary-link{cursor:pointer;padding:12px 0}
-  .secondary-link:hover{color:var(--primary)}
-  .auto-pill{border:1px solid var(--primary);color:var(--primary);padding:8px 16px;border-radius:24px;font-weight:800;font-size:12px;display:flex;align-items:center;gap:8px}
-
-  /* Compact context controls */
-  .section.ctx-compact .ctx-grid{display:grid;grid-template-columns:1fr;gap:8px;margin-top:6px}
-  .section.ctx-compact .ctx-block{padding:8px;border:1px solid var(--border);border-radius:8px;background:#fff}
-  .section.ctx-compact .ctx-label{font-size:11px;font-weight:700;color:#4a5866;margin-bottom:6px}
-  .section.ctx-compact .seg{display:inline-flex;gap:4px;background:#f6f7f9;border:1px solid var(--border);border-radius:14px;padding:2px}
-  .section.ctx-compact .seg-option{font-size:11px;padding:4px 8px;border-radius:12px;border:0;background:transparent;cursor:pointer}
-  .section.ctx-compact .seg-option.is-active{background:var(--primary);color:#fff;box-shadow:0 0 0 1px var(--primary) inset}
-  .section.ctx-compact .seg-option:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
-  .ctx-summary{margin-top:6px;font-size:11px;color:#6c7a86}
-
-  /* Hero */
-  .research-banner{
-    margin-top:120px;
-    background:linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
-    color:#fff;
-    padding:24px 32px;
-    position:relative;
-    overflow:hidden;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  .research-banner::after {
-    content: '';
-    position: absolute;
-    right: -80px;
-    top: -40px;
-    width: 200px;
-    height: 200px;
-    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-    border-radius: 50%;
-  }
-  .research-banner h2{
-    font-weight:500;
-    font-size:20px;
-    position:relative;
-    z-index:2;
-  }
-
-  /* Shell - Flipped to docs left, generation right */
-  .shell{max-width:1200px;margin:18px auto;border:1px solid var(--hair);border-radius:16px;overflow:hidden;background:#fff;box-shadow:var(--shadow);display:grid;grid-template-columns:1fr 320px}
-  .panel-head{padding:14px 16px;background:var(--soft);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
-  .panel-title{font-weight:800}
-  .btn{border:1px solid rgba(51, 111, 81,.28);background:rgba(51, 111, 81,.08);color:var(--primary);border-radius:8px;padding:8px 12px;cursor:pointer}
-  .btn.primary{background:var(--primary);color:#fff;border-color:var(--primary)}
-  .btn.ghost{background:#fff;border:1px dashed var(--border);color:#3b4b63}
-  .left{background:#fff;border-right:1px solid var(--border);display:flex;flex-direction:column}
-  .right{background:var(--soft);display:flex;flex-direction:column}
-  .left-body{padding:12px;overflow:auto}
-  .right-body{padding:12px;overflow:auto}
-
-  /* Left: Documents */
-  .filters{display:flex;gap:8px;align-items:center}
-.chip{border:1px solid var(--border);background:#fff;border-radius:999px;padding:6px 10px;font-size:12px;cursor:pointer}
-.chip.active{border-color:var(--primary);color:var(--primary);box-shadow:0 0 0 2px rgba(51, 111, 81,.12)}
-
-.doc{
-  background:#fff;
-  border-bottom:1px solid var(--hair);
-  padding:16px 0;
-  margin-bottom:0;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  transition:all 0.2s ease;
+:root {
+  --primary: #336F51;
+  --primary-light: #4a8a6a;
+  --primary-dark: #2a5a43;
+  --ink: #1f2d3d;
+  --muted: #6c7a89;
+  --border: #e0e5ea;
+  --hair: #eceff3;
+  --bg: #f5f6f7;
+  --card: #fff;
+  --soft: #f8f9fb;
+  --ok: #1f7a4d;
+  --warn: #8a5a00;
+  --info: #2d5699;
+  --shadow: 0 6px 18px rgba(20,26,38,.08);
+  --success: #28a745;
+  --error: #dc3545;
 }
 
-.doc:hover{
-  background:var(--soft);
-  margin:0 -12px;
-  padding-left:12px;
-  padding-right:12px;
-  border-radius:8px;
+* { 
+  margin: 0; 
+  padding: 0; 
+  box-sizing: border-box; 
 }
 
-.doc:last-child{
-  border-bottom:none;
+html, body {
+  height: 100vh;
+  overflow: hidden;
 }
 
-.doc-info{
-  flex:1;
+body { 
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Ubuntu, Cantarell, sans-serif;
+  font-size: 14px; 
+  background: var(--bg); 
+  color: var(--ink);
+  line-height: 1.5;
 }
 
-.doc .tt{
-  font-weight:600;
-  font-size:14px;
-  color:var(--ink);
-  margin-bottom:4px;
-}
-
-.doc .meta{
-  font-size:12px;
-  color:var(--muted);
-  font-weight:500;
-}
-
-.doc .actions{
-  display:flex;
-  gap:12px;
-  margin-top:0;
-}
-
-.doc-action{
-  color:var(--primary);
-  text-decoration:none;
-  cursor:pointer;
-  font-size:12px;
-  font-weight:600;
-  padding:4px 8px;
-  border-radius:6px;
-  transition:all 0.2s ease;
-  border:none;
-  background:none;
-}
-
-.doc-action:hover{
-  background:rgba(51, 111, 81, 0.1);
-  color:var(--primary-dark);
-}
-
-.empty{color:#627085;font-size:12px}
-.searchBox{padding:12px}
-.searchBox input{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:10px;background:#fff;font-size:13px}
-
-  /* Right: Generation */
-  .console{padding:14px 16px;overflow:auto}
-  .section{background:#fff;border:1px solid var(--hair);border-radius:12px;padding:12px;margin-bottom:12px}
-  .section h3{font-size:14px;margin-bottom:8px}
-  .row{display:flex;gap:12px;align-items:center}
-  .field{flex:1}
-  select, textarea{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:10px;background:#fff;font-size:13px}
-  textarea{min-height:88px;resize:vertical}
-  .hint{font-size:12px;color:var(--muted)}
-
-  @media (max-width:1000px){.shell{grid-template-columns:1fr}.right{display:none}}
-
-/* Toast Notification */
-.toast-notification {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
+/* Header */
+.header {
   background: #fff;
-  border: 1px solid var(--hair);
+  padding: 0 32px;
+  height: 72px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  box-shadow: var(--shadow);
+}
+
+.logo-section {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.logo {
+  width: 44px;
+  height: 44px;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
   border-radius: 12px;
-  box-shadow: 0 8px 28px rgba(0,0,0,.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 800;
+  font-size: 18px;
+}
+
+.brand-info h1 {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.2;
+}
+
+.brand-info .subtitle {
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.header-title {
+  font-size: 28px;
+  font-weight: 300;
+  color: var(--primary);
+  letter-spacing: -0.5px;
+}
+
+/* Secondary Navigation */
+.secondary-nav {
+  background: #fff;
+  border-bottom: 1px solid var(--border);
+  padding: 0 32px;
+  position: fixed;
+  top: 72px;
+  left: 0;
+  right: 0;
+  z-index: 999;
+  height: 48px;
+  display: flex;
+  align-items: center;
+}
+
+.secondary-links {
+  display: flex;
+  gap: 32px;
+}
+
+.secondary-link {
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--muted);
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.secondary-link:hover {
+  color: var(--ink);
+  background: var(--soft);
+}
+
+.secondary-link.active {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.secondary-link.active::after {
+  content: '';
+  position: absolute;
+  bottom: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 24px;
+  height: 2px;
+  background: var(--primary);
+  border-radius: 1px;
+}
+
+/* Advisor Banner */
+.advisor-banner {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+  color: #fff;
+  padding: 24px 32px;
+  margin-top: 120px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.advisor-banner::after {
+  content: '';
+  position: absolute;
+  right: -80px;
+  top: -40px;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+  border-radius: 50%;
+}
+
+.advisor-banner h2 {
+  font-size: 20px;
+  font-weight: 500;
+  position: relative;
+  z-index: 2;
+}
+
+/* Main Layout */
+.main-layout {
+  display: grid;
+  grid-template-columns: 280px 1fr 320px;
+  gap: 24px;
+  padding: 24px 32px;
+  max-width: 1600px;
+  margin: 0 auto;
+  height: calc(100vh - 144px);
+  grid-template-rows: minmax(0, 1fr);
+}
+
+/* Column Base */
+.column {
+  background: var(--card);
+  border: 1px solid var(--hair);
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: 100%;
+  max-height: 100%;
+}
+
+.column-header {
+  background: var(--soft);
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--hair);
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+
+/* Column Body */
+.column-body {
+  flex: 1;
+  padding: 20px 24px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  min-height: 0;
+}
+
+/* Scrollbar styling */
+.column-body::-webkit-scrollbar {
+  width: 8px;
+}
+
+.column-body::-webkit-scrollbar-track {
+  background: var(--soft);
+  border-radius: 4px;
+}
+
+.column-body::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+}
+
+.column-body::-webkit-scrollbar-thumb:hover {
+  background: var(--muted);
+}
+
+/* Firefox scrollbar */
+.column-body {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) var(--soft);
+}
+
+.client-header-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.icon-btn {
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.refresh-clients-btn {
+  background: var(--info);
+  color: white;
+}
+
+.refresh-clients-btn:hover {
+  background: #1e4a7a;
+  transform: rotate(180deg);
+}
+
+.add-client-btn {
+  background: var(--primary);
+  color: white;
+}
+
+.add-client-btn:hover {
+  background: var(--primary-dark);
+  transform: scale(1.05);
+}
+
+.client-item {
+  padding: 16px 20px;
+  border-radius: 12px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 500;
+  border: 1px solid transparent;
+}
+
+.client-item:hover {
+  background: rgba(51, 111, 81, 0.05);
+  border-color: rgba(51, 111, 81, 0.1);
+}
+
+.client-item.active {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+  color: white;
+  font-weight: 600;
+  border-color: var(--primary);
+  box-shadow: 0 4px 12px rgba(51, 111, 81, 0.25);
+}
+
+.empty-state {
+  text-align: center;
+  color: var(--muted);
+  font-style: italic;
+  padding: 40px 20px;
+  background: var(--soft);
+  border-radius: 12px;
+  border: 1px dashed var(--border);
+}
+
+.upload-area {
+  border: 2px dashed var(--border);
+  border-radius: 12px;
+  padding: 32px 24px;
+  text-align: center;
+  margin-bottom: 24px;
+  background: var(--soft);
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.upload-area:hover {
+  border-color: var(--primary);
+  background: rgba(51, 111, 81, 0.02);
+}
+
+.upload-input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.upload-text {
+  color: var(--muted);
+  font-size: 15px;
+  font-weight: 500;
+}
+
+/* AI Profile Status */
+.profile-status-inline {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.profile-complete-inline {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--ok);
+  font-weight: 600;
+}
+
+.profile-needed-inline {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--warn);
+  font-weight: 500;
+}
+
+.status-light-inline {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.status-light-inline.green {
+  background: var(--ok);
+  box-shadow: 0 0 0 2px rgba(31, 122, 77, 0.2);
+}
+
+.status-light-inline.red {
+  background: var(--warn);
+  box-shadow: 0 0 0 2px rgba(138, 90, 0, 0.2);
+}
+
+.generate-profile-btn-inline {
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 4px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  margin-left: 4px;
+}
+
+.generate-profile-btn-inline:hover:not(:disabled) {
+  background: var(--primary-dark);
+}
+
+.generate-profile-btn-inline:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Document Controls */
+.doc-controls {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 20px;
+  align-items: center;
+}
+
+.search-bar {
+  flex: 1;
+  padding: 12px 16px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-size: 14px;
+  background: white;
+  transition: all 0.2s ease;
+}
+
+.search-bar:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(51, 111, 81, 0.1);
+}
+
+.doc-control {
+  color: var(--primary);
+  text-decoration: none;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.doc-control:hover {
+  background: rgba(51, 111, 81, 0.1);
+  color: var(--primary-dark);
+}
+
+/* Document List */
+.doc-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--hair);
+  transition: all 0.2s ease;
+}
+
+.doc-item:hover {
+  background: var(--soft);
+  margin: 0 -24px;
+  padding-left: 24px;
+  padding-right: 24px;
+  border-radius: 8px;
+}
+
+.doc-item:last-child {
+  border-bottom: none;
+}
+
+.doc-info {
+  flex: 1;
+}
+
+.doc-name {
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 4px;
+  font-size: 14px;
+}
+
+.doc-date {
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.doc-actions {
+  display: flex;
+  gap: 12px;
+  font-size: 12px;
+}
+
+.doc-action {
+  color: var(--primary);
+  text-decoration: none;
+  cursor: pointer;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.doc-action:hover {
+  background: rgba(51, 111, 81, 0.1);
+  color: var(--primary-dark);
+}
+
+/* Free-form query input styles */
+.generator-textarea {
+  width: 100%;
+  min-height: 60px;
+  max-height: 120px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-size: 13px;
+  line-height: 1.5;
+  resize: vertical;
+  font-family: inherit;
+  background: white;
+  transition: all 0.2s ease;
+  margin-bottom: 12px;
+}
+
+.generator-textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(51, 111, 81, 0.1);
+}
+
+.generator-textarea::placeholder {
+  color: var(--muted);
+}
+
+.query-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.char-count {
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.generator-form .generator-btn {
+  width: auto;
+  padding: 10px 20px;
+  margin: 0;
+}
+
+.generator-btn {
+  padding: 14px 20px;
+  border: 1px solid var(--primary);
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  background: var(--primary);
+  color: white;
+}
+
+.generator-btn:hover:not(:disabled) {
+  background: var(--primary-dark);
+  border-color: var(--primary-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(51, 111, 81, 0.25);
+}
+
+.test-btn {
+  background: var(--info);
+  border-color: var(--info);
+}
+
+.test-btn:hover:not(:disabled) {
+  background: #1e4a7a;
+  border-color: #1e4a7a;
+}
+
+.generator-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Queue Section */
+.queue-section {
+  border-top: 1px solid var(--hair);
+  padding-top: 24px;
+}
+
+.queue-header {
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--ink);
+  margin-bottom: 16px;
+}
+
+.queue-item {
+  background: var(--soft);
+  border: 1px solid var(--border);
+  border-radius: 12px;
   padding: 16px;
-  display: none;
-  z-index: 1001;
-  min-width: 280px;
-  animation: slideIn 0.3s ease;
-}
-
-@keyframes slideIn {
-  from {
-    transform: translateX(100%);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
-
-.toast-content {
+  margin-bottom: 12px;
   display: flex;
   align-items: center;
   gap: 12px;
 }
 
-.toast-spinner {
+.spinner {
   width: 16px;
   height: 16px;
-  border: 2px solid var(--hair);
+  border: 2px solid var(--border);
   border-left-color: var(--primary);
   border-radius: 50%;
   animation: spin 1s linear infinite;
-  flex-shrink: 0;
 }
 
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
 
-.toast-text {
+.queue-item-content {
   flex: 1;
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--ink);
+  font-size: 13px;
 }
 
-.toast-close {
+.queue-item-name {
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 4px;
+}
+
+.queue-item-client {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.queue-timer {
+  font-size: 12px;
+  color: var(--info);
+  font-weight: 600;
+  font-family: 'SF Mono', 'Monaco', 'Inconsolata', monospace;
+}
+
+.queue-cancel {
   background: none;
   border: none;
   color: var(--muted);
   cursor: pointer;
-  font-size: 18px;
-  font-weight: 600;
-  padding: 0;
-  width: 20px;
-  height: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 4px;
+  font-size: 14px;
+  padding: 4px 8px;
+  border-radius: 6px;
   transition: all 0.2s ease;
 }
 
-.toast-close:hover {
+.queue-cancel:hover {
+  background: rgba(220, 53, 69, 0.1);
+  color: var(--error);
+}
+
+/* Document Viewer */
+dialog#viewer {
+  width: min(1200px, 95vw);
+  height: min(90vh, 900px);
+  border: 0;
+  border-radius: 16px;
+  padding: 0;
+  overflow: hidden;
+  box-shadow: 0 25px 80px rgba(0,0,0,.35);
+  margin: auto;
+}
+
+dialog::backdrop {
+  background: rgba(0,0,0,.6);
+}
+
+.viewer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--ink);
+  color: #fff;
+  padding: 16px 24px;
+}
+
+.viewer-title {
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.close-btn {
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.close-btn:hover {
+  background: rgba(255,255,255,0.15);
+}
+
+#viewerFrame {
+  width: 100%;
+  height: calc(100% - 64px);
+  border: 0;
+  background: #f5f6f7;
+}
+
+/* Document viewer content styling */
+.viewer-content {
+  padding: 40px 50px;
+  max-width: 1000px;
+  margin: 0 auto;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  line-height: 1.6;
+  color: #1f2d3d;
+  background: white;
+  height: calc(100% - 64px);
+  overflow-y: auto;
+}
+
+.viewer-content h1 {
+  font-size: 32px;
+  color: var(--primary);
+  border-bottom: 3px solid var(--primary);
+  padding-bottom: 16px;
+  margin: 40px 0 24px 0;
+  font-weight: 700;
+}
+
+.viewer-content h2 {
+  font-size: 24px;
+  color: #1f2d3d;
+  margin: 32px 0 16px 0;
+  font-weight: 600;
+  border-left: 4px solid var(--primary);
+  padding-left: 16px;
+}
+
+.viewer-content h3 {
+  font-size: 20px;
+  color: #1f2d3d;
+  margin: 24px 0 14px 0;
+  font-weight: 600;
+}
+
+.viewer-content h4 {
+  font-size: 18px;
+  color: #1f2d3d;
+  margin: 20px 0 12px 0;
+  font-weight: 600;
+}
+
+.viewer-content p {
+  margin-bottom: 18px;
+  text-align: justify;
+}
+
+.viewer-content ul, .viewer-content ol {
+  margin: 18px 0;
+  padding-left: 32px;
+}
+
+.viewer-content li {
+  margin-bottom: 10px;
+}
+
+.viewer-content strong {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.viewer-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 24px 0;
+  font-size: 14px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.viewer-content table th {
   background: var(--soft);
+  border: 1px solid var(--border);
+  padding: 14px 12px;
+  text-align: left;
+  font-weight: 600;
   color: var(--ink);
+}
+
+.viewer-content table td {
+  border: 1px solid var(--border);
+  padding: 12px;
+  text-align: left;
+}
+
+.viewer-content table tr:nth-child(even) {
+  background: #fafbfc;
+}
+
+.viewer-content blockquote {
+  border-left: 4px solid var(--primary);
+  margin: 20px 0;
+  padding: 10px 20px;
+  background-color: var(--soft);
+  font-style: italic;
+}
+
+.viewer-content code {
+  background-color: #f5f6f7;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
+}
+
+.viewer-content pre {
+  background-color: #f5f6f7;
+  padding: 15px;
+  border-radius: 6px;
+  overflow-x: auto;
+  margin: 20px 0;
+}
+
+.viewer-content hr {
+  border: none;
+  border-top: 2px solid #e0e5ea;
+  margin: 30px 0;
+}
+
+/* Delete Modal Styling */
+#deleteModal {
+  width: min(480px, 90vw);
+  border: 0;
+  border-radius: 12px;
+  padding: 0;
+  box-shadow: 0 20px 60px rgba(0,0,0,.25);
+  margin: auto;
+}
+
+.delete-modal-content {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.delete-modal-header {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: white;
+  padding: 20px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  border-radius: 11px 11px 0 0;
+}
+
+.delete-modal-header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.delete-modal-body {
+  padding: 24px;
+  background: #fafafa;
+}
+
+.delete-warning {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border: 1px solid #f59e0b;
+  border-radius: 8px;
+  padding: 16px 20px;
+  margin-bottom: 20px;
+  color: #92400e;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 500;
+  box-shadow: 0 2px 4px rgba(245, 158, 11, 0.1);
+}
+
+.delete-modal-body p {
+  margin-bottom: 20px;
+  line-height: 1.6;
+  color: #374151;
+  font-size: 14px;
+}
+
+.document-info {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 24px;
+  font-size: 14px;
+  color: #374151;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.document-info strong {
+  color: #111827;
+  font-weight: 600;
+}
+
+.delete-confirmation {
+  margin-bottom: 24px;
+}
+
+.checkbox-container {
+  display: flex;
+  align-items: flex-start;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1.5;
+  gap: 12px;
+  padding: 16px;
+  background: white;
+  border-radius: 8px;
+  border: 2px solid #e5e7eb;
+  transition: all 0.2s ease;
+}
+
+.checkbox-container:hover {
+  border-color: #ef4444;
+  background: #fef2f2;
+}
+
+.checkbox-container input[type="checkbox"] {
+  margin: 0;
+  opacity: 0;
+  position: absolute;
+}
+
+.checkmark {
+  width: 20px;
+  height: 20px;
+  background-color: white;
+  border: 2px solid #d1d5db;
+  border-radius: 4px;
+  position: relative;
+  flex-shrink: 0;
+  margin-top: 2px;
+  transition: all 0.2s ease;
+}
+
+.checkbox-container:hover .checkmark {
+  border-color: #ef4444;
+}
+
+.checkbox-container input:checked + .checkmark {
+  background-color: #ef4444;
+  border-color: #ef4444;
+}
+
+.checkbox-container input:checked + .checkmark::after {
+  content: '';
+  position: absolute;
+  left: 6px;
+  top: 2px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.delete-modal-actions {
+  background: #f9fafb;
+  padding: 20px 24px;
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  border-top: 1px solid #e5e7eb;
+}
+
+.delete-modal-actions .btn {
+  min-width: 100px;
+  font-weight: 600;
+}
+
+/* Button base styles */
+.btn {
+  padding: 12px 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  outline: none;
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: white;
+  border: 1px solid var(--primary);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--primary-dark);
+  border-color: var(--primary-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(51, 111, 81, 0.25);
+}
+
+.btn-secondary {
+  background: white;
+  color: var(--ink);
+  border: 1px solid var(--border);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: var(--soft);
+  border-color: var(--muted);
+}
+
+.btn-danger {
+  background: var(--error);
+  color: white;
+  border: 1px solid var(--error);
+}
+
+.btn-danger:hover:not(:disabled) {
+  background: #c82333;
+  border-color: #c82333;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.25);
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Modal actions spacing */
+.modal-actions {
+  background: var(--soft);
+  padding: 20px 28px;
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  border-top: 1px solid var(--hair);
+}
+
+/* Add Client Modal */
+.modal-content {
+  background: white;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.modal-header {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+  color: white;
+  padding: 20px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.modal-close-btn {
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: white;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  line-height: 1;
+  transition: all 0.2s ease;
+}
+
+.modal-close-btn:hover {
+  background: rgba(255,255,255,0.2);
+}
+
+.modal-body {
+  padding: 28px;
+}
+
+.form-group {
+  margin-bottom: 24px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: var(--ink);
+  font-size: 14px;
+}
+
+.form-input {
+  width: 100%;
+  padding: 14px 16px;
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  background: white;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(51, 111, 81, 0.1);
+}
+
+.input-help {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 6px;
+}
+
+.modal-upload-area {
+  border: 2px dashed var(--border);
+  border-radius: 12px;
+  padding: 32px 24px;
+  text-align: center;
+  background: var(--soft);
+  position: relative;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.modal-upload-area:hover {
+  border-color: var(--primary);
+  background: rgba(51, 111, 81, 0.02);
+}
+
+.modal-upload-input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.upload-icon {
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+
+.modal-upload-text {
+  color: var(--muted);
+}
+
+.upload-hint {
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.selected-files {
+  margin-top: 12px;
+}
+
+.file-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background: var(--soft);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  margin-bottom: 6px;
+  font-size: 13px;
+}
+
+.file-remove {
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.file-remove:hover {
+  background: rgba(220, 53, 69, 0.1);
+  color: #dc3545;
+}
+
+.processing-info {
+  background: #d1ecf1;
+  border: 1px solid #bee5eb;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 13px;
+  color: #0c5460;
+}
+
+/* Action Sections */
+.action-section {
+  background: var(--card);
+  border: 1px solid var(--hair);
+  border-radius: 12px;
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+
+.action-section:last-child {
+  margin-bottom: 0;
+}
+
+.section-header {
+  background: var(--soft);
+  padding: 12px 16px;
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--ink);
+  border-bottom: 1px solid var(--hair);
+}
+
+.generate-section .generator-form {
+  padding: 16px;
+  border-bottom: 1px solid var(--hair);
+}
+
+.upload-section .upload-area-right {
+  margin: 16px;
+  border: 2px dashed var(--border);
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+  background: var(--soft);
+  position: relative;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.upload-section .upload-area-right:hover {
+  border-color: var(--primary);
+  background: rgba(51, 111, 81, 0.02);
+}
+
+.upload-area-right .upload-input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.upload-text-right {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 500;
+  pointer-events: none;
+}
+
+.queue-header {
+  background: var(--bg);
+  padding: 10px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  border-top: 1px solid var(--hair);
+}
+
+.queue-container {
+  max-height: 150px;
+  overflow-y: auto;
+  min-height: 50px;
+  padding: 8px;
+}
+
+.queue-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.queue-container::-webkit-scrollbar-track {
+  background: var(--soft);
+  border-radius: 3px;
+}
+
+.queue-container::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+
+.queue-container::-webkit-scrollbar-thumb:hover {
+  background: var(--muted);
+}
+
+.empty-queue {
+  text-align: center;
+  color: var(--muted);
+  font-style: italic;
+  padding: 20px 10px;
+  font-size: 12px;
+}
+
+/* Responsive Design */
+@media (max-width: 1400px) {
+  .main-layout {
+    grid-template-columns: 260px 1fr 300px;
+    gap: 20px;
+    padding: 20px 24px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .main-layout {
+    grid-template-columns: 240px 1fr;
+    max-width: 1000px;
+  }
+  
+  .generate-column {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .header {
+    padding: 0 16px;
+    height: 60px;
+  }
+  
+  .advisor-banner {
+    margin-top: 60px;
+    padding: 16px;
+  }
+  
+  .main-layout {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 16px;
+    height: calc(100vh - 120px);
+  }
+  
+  .column-body {
+    max-height: 400px;
+  }
 }
 </style>
 </head>
 <body>
-  <!-- Header -->
-  <div class="header">
-    <div class="logo-section">
-      <div class="logo">DG</div>
-      <div class="brand-info">
-        <h1>DocuGen</h1>
-        <div class="subtitle">By Doculabs</div>
-      </div>
+
+<div class="header">
+  <div class="logo-section">
+    <div class="logo">DG</div>
+    <div class="brand-info">
+      <h1>DocuGen</h1>
+      <div class="subtitle">By Doculabs</div>
     </div>
-    <h1 class="header-title">Research</h1>
   </div>
-
-  <!-- Secondary Nav -->
-  <nav class="secondary-nav">
-    <div class="secondary-links">
-      <div class="secondary-link">Dashboard</div>
-      <div class="secondary-link">Advisor</div>
-      <div class="secondary-link">Research</div>
-      <div class="secondary-link">Chat</div>
-    </div>
-  </nav>
-
-  <!-- Hero -->
-  <header class="research-banner">
-    <h2>Agentic Research</h2>
-  </header>
-
-  <!-- Shell -->
-  <section class="shell">
-    <!-- Left: Documents -->
-    <aside class="left">
-      <div class="panel-head">
-        <span class="panel-title">Research Library</span>
-        <div class="filters">
-          <button class="chip active" data-filter="All">All</button>
-          <button class="chip" data-filter="Markets">Markets</button>
-          <button class="chip" data-filter="Sectors">Sectors</button>
-          <button class="chip" data-filter="Assets">Assets</button>
-        </div>
-      </div>
-      <div class="left-body">
-        <div class="searchBox" style="padding:0 0 12px 0">
-          <input id="docSearch" placeholder="Search documents…"/>
-        </div>
-        <div id="docsPane"></div>
-      </div>
-    </aside>
-
-    <!-- Right: Generation -->
-    <main class="right">
-      <div class="panel-head"><span class="panel-title" id="centerTitle">Create Research</span></div>
-      <div class="console">
-        <div class="section">
-          <h3>Research Area & Topic</h3>
-          <div class="row">
-            <div class="field">
-              <select id="area">
-                <option value="" selected>Select area…</option>
-                <option value="Markets">Markets</option>
-                <option value="Sectors">Sectors</option>
-                <option value="Assets">Assets</option>
-                <option value="How">Concepts</option>
-              </select>
-            </div>
-            <div class="field">
-              <select id="narrow" disabled>
-                <option value="">Choose a topic…</option>
-              </select>
-            </div>
-            <button class="btn primary" id="createBtn" disabled>Generate</button>
-          </div>
-          <div class="hint" style="margin-top:6px"></div>
-        </div>
-
-        <!-- Additional Context -->
-        <div class="section ctx-compact" id="ctxSection">
-          <div class="ctx-head"><h3>Research Parameters</h3></div>
-          <div class="ctx-grid">
-            <div class="ctx-block">
-              <div class="ctx-label">Depth</div>
-              <div class="seg" role="radiogroup" aria-label="Depth">
-                <button type="button" class="seg-option is-active" data-group="depth" data-value="overview">Overview</button>
-                <button type="button" class="seg-option" data-group="depth" data-value="targeted">Targeted</button>
-                <button type="button" class="seg-option" data-group="depth" data-value="deep">Deep Focus</button>
-              </div>
-            </div>
-            <div class="ctx-block">
-              <div class="ctx-label">Rigor</div>
-              <div class="seg" role="radiogroup" aria-label="Rigor">
-                <button type="button" class="seg-option" data-group="rigor" data-value="quick">Quick</button>
-                <button type="button" class="seg-option is-active" data-group="rigor" data-value="standard">Thorough</button>
-                <button type="button" class="seg-option" data-group="rigor" data-value="exhaustive">Extensive</button>
-              </div>
-            </div>
-            <div class="ctx-block">
-              <div class="ctx-label">Focus</div>
-              <div class="seg" role="radiogroup" aria-label="Lens">
-                <button type="button" class="seg-option is-active" data-group="lens" data-value="investment">Investment Research</button>
-                <button type="button" class="seg-option" data-group="lens" data-value="educational">Educational Summary</button>
-                <button type="button" class="seg-option" data-group="lens" data-value="technical">Technical Analysis</button>
-              </div>
-            </div>
-          </div>
-          <div id="ctxSummary" class="ctx-summary">Overview • Thorough • Investment Research</div>
-        </div>
-      </div>
-    </main>
-  </section>
-
-<!-- Toast notification -->
-<div id="toastNotification" class="toast-notification">
-  <div class="toast-content">
-    <div class="toast-spinner"></div>
-    <div class="toast-text">Generating Research...</div>
-    <button class="toast-close" id="toastClose">×</button>
-  </div>
+  <h1 class="header-title">Advisor</h1>
 </div>
 
-<!-- ===== Scripts ===== -->
-<script>
-/* ===== Demo data ===== */
-const STEPS = ["Queued","Fetching","Analyzing","Drafting","Finalizing"];
-const DEMO = [
-  { id:"r-001a", title:"Energy Sector Overview", area:"Sectors", topic:"Energy",
-    status:"Complete", step:5, progress:100, created:"2025-04-08",
-    docs:[{id:"d-100",title:"Energy Sector Overview", pages:9, when:"Apr 9, 2025"}] },
-  { id:"r-001c", title:"Stagflation Deep Research", area:"Markets", topic:"Macro Concepts",
-    status:"Complete", step:5, progress:100, created:"2025-04-08",
-    docs:[{id:"d-102",title:"Stagflation Deep Research", pages:7, when:"Apr 9, 2025"}] },
-  { id:"r-003", title:"US Macro Snapshot", area:"Markets", topic:"US Macro Outlook",
-    status:"Complete", step:5, progress:100, created:"2025-03-28",
-    docs:[{id:"d-103",title:"US Macro Snapshot", pages:10, when:"Mar 29, 2025"}] }
-];
+<!-- Secondary Nav -->
+<nav class="secondary-nav">
+  <div class="secondary-links">
+    <div class="secondary-link">Dashboard</div>
+    <div class="secondary-link active">Advisor</div>
+    <div class="secondary-link">Research</div>
+    <div class="secondary-link">Chat</div>
+  </div>
+</nav>
 
-const OPTIONS = {
-  Markets: ["Employment","Credit","Commodities","Futures","Inflation","GDP","Rates"],
-  Sectors: ["Technology","Healthcare","Energy","Financials","Industrials","Consumer","Utilities"],
-  Assets: ["NVDA (Equity)","TSM (Equity)","ASML (Equity)","MSFT (Equity)", "AAPL (Equity)", "IONQ (Equity)","SPGI (Equity)","CME (Equity)","VTI (ETF)","VEA (ETF)","VWO (ETF)","BND (ETF)"],
-  How: ["ETFs work","Semiconductor Supply Chain","Taxation","Treasury bills","Options Basics","Debt Leveraging"]
-};
+<div class="advisor-banner">
+  <h2>Document Generation</h2>
+</div>
 
-/* ===== Helpers ===== */
-const qs = s=>document.querySelector(s);
-const qsa = s=>[...document.querySelectorAll(s)];
-const TAX_DOC_TITLE = "Deep Research TQE Taxation"; 
-const TAX_DOC_PAGES = 10;                             
-
-/* ===== Center: selector + status ===== */
-const areaSel = qs('#area');
-const topicSel = qs('#narrow');
-const createBtn = qs('#createBtn');
-const centerTitle = qs('#centerTitle');
-
-const KEYMAP = {"Individual Assets":"Assets","How Things Work":"How"};
-
-areaSel.onchange = () => {
-  topicSel.innerHTML = '<option value="">Choose a topic…</option>';
-  const key = KEYMAP[areaSel.value] || areaSel.value;
-  const opts = OPTIONS[key] || [];
-  opts.forEach(o => topicSel.add(new Option(o, o)));
-  topicSel.disabled = !opts.length;
-  createBtn.disabled = true;
-};
-if (areaSel.value) areaSel.dispatchEvent(new Event('change'));
-topicSel.onchange = ()=> createBtn.disabled = !(areaSel.value && topicSel.value);
-
-createBtn.onclick = ()=>{
-  const item = {
-    id:'r-'+(Math.random()*1e5|0),
-    title: `${topicSel.value}`,
-    area: areaSel.value,
-    topic: topicSel.value,
-    status:'Generating',
-    step:0, progress:0,
-    created: new Date().toISOString().slice(0,10),
-    docs:[]
-  };
-  DEMO.unshift(item);
-  drawDocs();
-  startDemoProgress(item);
-};
-
-//Tax Doc
-function finalizeItem(item){
-  const isTaxationRun =
-    (item.area === "How" || item.area === "How Things Work") &&
-    /taxation/i.test(item.topic || "");
+<div class="main-layout">
   
-  const isIONQRun =
-    item.area === "Assets" &&
-    /ionq/i.test(item.topic || "");
+  <!-- Clients Column -->
+  <div class="column clients-column">
+    <div class="column-header">
+      Clients
+      <div class="client-header-actions">
+        <button class="icon-btn refresh-clients-btn" onclick="loadClientsFromVertesia()" title="Refresh Client List">↻</button>
+        <button class="icon-btn add-client-btn" onclick="openAddClientModal()" title="Add New Client">+</button>
+      </div>
+    </div>
+    <div class="column-body">
+      <div id="clientList"></div>
+    </div>
+  </div>
 
-  if (isTaxationRun) {
-    item.docs = [{
-      id: 'd-' + (Math.random()*1e5|0),
-      title: TAX_DOC_TITLE,
-      pages: TAX_DOC_PAGES,
-      when: new Date().toDateString().slice(4)
-    }];
-  } else if (isIONQRun) {
-    item.docs = [{
-      id: 'd-' + (Math.random()*1e5|0),
-      title: "IONQ Deep Research",
-      pages: 8,
-      when: new Date().toDateString().slice(4)
-    }];
-  } else {
-    // fallback demo doc (unchanged)
-    item.docs = [{
-      id:'d-'+(Math.random()*1e5|0),
-      title:`DEEP RESEARCH: ${item.title}`,
-      pages:12+((Math.random()*8)|0),
-      when:new Date().toDateString().slice(4)
-    }];
-  }
-}
-
-/* ===== Status simulation with toast ===== */
-let tickTimer=null;
-function startDemoProgress(item){
-  clearInterval(tickTimer);
-  const toast = document.getElementById('toastNotification');
-  toast.style.display = 'block';
-  updateToastStatus(item);
-  
-  tickTimer = setInterval(()=>{
-    if(item.status==="Complete") return clearInterval(tickTimer);
-
-    item.progress = Math.min(item.progress + Math.random()*7+3, 99);
-    item.step = Math.min(Math.floor(item.progress/25), 4);
-
-    if(item.progress >= 99){
-      item.status = "Complete";
-      item.step = 5;
-      item.progress = 100;
-      finalizeItem(item);
-      clearInterval(tickTimer);
-      drawDocs();
+  <!-- Documents Column -->
+  <div class="column documents-column">
+    <div class="column-header" id="documentsHeader">
+      <span>Documents</span>
+      <div id="profileStatus" class="profile-status-inline">
+        <!-- Will be populated dynamically -->
+      </div>
+    </div>
+    <div class="column-body">
+      <div class="doc-controls">
+        <input type="text" class="search-bar" id="searchBar" placeholder="Search documents..." onkeyup="searchDocuments()">
+        <span class="doc-control" onclick="sortDocuments()">Sort by Date</span>
+        <span class="doc-control" onclick="toggleDocuments()">Toggle All</span>
+      </div>
       
-      // Show completion then hide
-      updateToastStatus(item);
-      setTimeout(() => {
-        toast.style.display = 'none';
-        // Reset form
-        areaSel.value = "";
-        topicSel.innerHTML = '<option value="">Choose a topic…</option>';
-        topicSel.disabled = true;
-        createBtn.disabled = true;
-      }, 2000);
-    }
+      <div class="doc-list" id="documentsList"></div>
+    </div>
+  </div>
 
-    updateToastStatus(item);
-  }, 900);
-}
-
-function updateToastStatus(p){
-  const toastText = document.querySelector('.toast-text');
-  const toastSpinner = document.querySelector('.toast-spinner');
-  
-  if(p.status === "Complete") {
-    toastSpinner.style.display = 'none';
-    toastText.textContent = 'Research Complete!';
-  } else {
-    toastText.textContent = 'Generating Research...';
-  }
-}
-
-// Toast close button
-document.getElementById('toastClose').onclick = () => {
-  clearInterval(tickTimer);
-  const idx = DEMO.findIndex(x=>x.status!=="Complete");
-  if(idx>-1) DEMO.splice(idx,1);
-  drawDocs(); 
-  document.getElementById('toastNotification').style.display = 'none';
-  // Reset form
-  areaSel.value = "";
-  topicSel.innerHTML = '<option value="">Choose a topic…</option>';
-  topicSel.disabled = true;
-  createBtn.disabled = true;
-};
-
-/* ===== Left: docs ===== */
-const docsPane = qs('#docsPane');
-const docSearch = qs('#docSearch');
-const chips = qsa('.chip');
-
-function gatherDocs(){
-  const docs=[];
-  DEMO.forEach(p=> (p.docs||[]).forEach(d=> docs.push({...d, area:p.area, topic:p.topic, parent:p.title})));
-  return docs.sort((a,b)=> (b.when||"").localeCompare(a.when||""));
-}
-let docFilter = "All";
-
-/* ==== VIEWER + PATHS ==== */
-const DOC_DIR = './docs';
-
-function fileUrlFromTitle(title){
-  const base = `${DOC_DIR}/${title}.pdf`;
-  const bust = `t=${Date.now()}`;
-  return `${base}?${bust}#page=1&zoom=page-fit`;
-}
-
-function openViewer(url, title){
-  const dlg = document.getElementById('viewer');
-  document.getElementById('viewerTitle').textContent = title || 'Document';
-  const frame = document.getElementById('viewerFrame');
-  frame.src = url + '#page=1';
-  dlg.showModal();
-}
-
-function drawDocs(){
-  const needle = (docSearch.value||"").toLowerCase();
-  const docs = gatherDocs().filter(d=>{
-    const matchFilter = (docFilter==="All") || d.area===docFilter;
-    const matchText = [d.title,d.parent,d.topic,d.area].join(' ').toLowerCase().includes(needle);
-    return matchFilter && matchText;
-  });
-
-  docsPane.innerHTML = docs.length ? docs.map(d=>{
-    const url = d.url || fileUrlFromTitle(d.title);
-    return `
-      <div class="doc">
-        <div class="doc-info">
-          <div class="tt">${d.title}</div>
-          <div class="meta">${d.when||""} • ${d.area} • ${d.topic} • ${d.pages} pages</div>
+  <!-- Generate & Upload Column -->
+  <div class="column generate-column">
+    <div class="column-header">Generate & Upload</div>
+    <div class="column-body">
+      
+      <!-- Generate Section -->
+      <div class="action-section generate-section">
+        <div class="section-header">Generate Document</div>
+        <div class="generator-form">
+          <textarea 
+            class="generator-textarea" 
+            id="queryInput" 
+            placeholder="What research or document would you like to generate? Be specific about the type of analysis, timeframe, or particular aspects you need..."
+            rows="3"
+            maxlength="500"
+          ></textarea>
+          <div class="query-meta">
+            <span class="char-count" id="charCount">0 / 500</span>
+            <button class="generator-btn" id="generateBtn" onclick="generateDocument()" disabled>Generate</button>
+          </div>
         </div>
-        <div class="actions">
-          <button class="doc-action view-doc" data-url="${url}" data-title="${d.title}">view</button>
-          <a class="doc-action" href="${url}" download>download</a>
-          <button class="doc-action" onclick="deleteDocument('${d.id}')">delete</button>
+        
+        <div class="queue-header">Generation Queue (<span id="generationActiveCount">0</span>/5)</div>
+        <div class="queue-container" id="queueItems">
+          <div class="empty-queue">No documents generating</div>
         </div>
-      </div>`;
-  }).join('') : `<div class="empty">No documents match your filters.</div>`;
-}
+      </div>
 
-docsPane.addEventListener('click', (e)=>{
-  const btn = e.target.closest('.view-doc');
-  if(!btn) return;
-  openViewer(btn.dataset.url, btn.dataset.title);
-});
-docSearch.oninput = drawDocs;
-chips.forEach(c=>c.onclick=()=>{ chips.forEach(x=>x.classList.remove('active')); c.classList.add('active'); docFilter=c.dataset.filter; drawDocs(); });
+      <!-- Upload Section -->
+      <div class="action-section upload-section">
+        <div class="section-header">Upload</div>
+        <div class="upload-area-right">
+          <input type="file" class="upload-input" id="fileUpload" onchange="handleFileUpload(event)" multiple accept=".pdf,.doc,.docx,.xlsx,.ppt,.pptx">
+          <div class="upload-text-right">Drop files here or click to upload</div>
+        </div>
+        
+        <div class="queue-header">Upload Queue (<span id="uploadQueueCount">0</span>)</div>
+        <div class="queue-container" id="uploadQueueItems">
+          <div class="empty-queue">No files uploading</div>
+        </div>
+      </div>
+      
+    </div>
+  </div>
 
-/* ===== Segmented controls ===== */
-function setActiveInSeg(seg, btn){
-  seg.querySelectorAll('.seg-option').forEach(b=>{ b.classList.remove('is-active'); b.setAttribute('aria-checked','false'); });
-  btn.classList.add('is-active'); btn.setAttribute('aria-checked','true');
-}
-document.addEventListener('click', (e)=>{
-  const btn = e.target.closest('.seg-option'); if(!btn) return;
-  const seg = btn.closest('.seg'); if(!seg) return;
-  setActiveInSeg(seg, btn); updateCtxSummary();
-});
-document.addEventListener('keydown', (e)=>{
-  if(!['ArrowLeft','ArrowRight'].includes(e.key)) return;
-  const seg = e.target.closest('.seg'); if(!seg) return;
-  const opts = [...seg.querySelectorAll('.seg-option')];
-  const i = opts.findIndex(o=>o.classList.contains('is-active'));
-  const next = e.key==='ArrowRight' ? (i+1)%opts.length : (i-1+opts.length)%opts.length;
-  setActiveInSeg(seg, opts[next]); opts[next].focus(); updateCtxSummary(); e.preventDefault();
-});
-function getResearchParams(){
-  const out = {};
-  document.querySelectorAll('.seg').forEach(seg=>{
-    const group = seg.querySelector('.seg-option.is-active')?.dataset.group;
-    const value = seg.querySelector('.seg-option.is-active')?.dataset.value;
-    if(group && value) out[group] = value;
-  });
-  return out;
-}
-function updateCtxSummary(){
-  const labels = {overview:'Overview', targeted:'Targeted', deep:'Deep Focus', quick:'Quick', standard:'Thorough', exhaustive:'Extensive', investment:'Investment Research', educational:'Educational Summary', technical:'Technical Analysis'};
-  const ctx = getResearchParams();
-  qs('#ctxSummary').textContent = [ctx.depth, ctx.rigor, ctx.lens].map(v=>labels[v]).filter(Boolean).join(' • ');
-}
+</div>
 
-/* ===== Init ===== */
-function init(){
-  drawDocs();
-  // Start with blank form
-  centerTitle.textContent = 'Create Research';
-  areaSel.value = ""; 
-  topicSel.innerHTML = `<option value="">Choose a topic…</option>`; 
-  topicSel.disabled = true;
-  createBtn.disabled = true;
-}
-init();
-</script>
-
-<!-- Viewer styles and dialog remain the same -->
-<style>
-  dialog#viewer {
-    width: min(1100px, 95vw);
-    height: min(90vh, 900px);
-    border: 0;
-    border-radius: 12px;
-    padding: 0;
-    overflow: hidden;
-    box-shadow: 0 20px 60px rgba(0,0,0,.28);
-    margin: auto;
-  }
-  dialog::backdrop {
-    background: rgba(0,0,0,.55);
-  }
-  .viewer-head {
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    background:var(--ink);
-    color:#fff;
-    padding:10px 14px;
-  }
-  .viewer-title{font-weight:700;font-size:14px}
-  .viewer-close{
-    border:0;
-    background:rgba(255,255,255,0.1);
-    color:#fff;
-    border-radius:8px;
-    padding:6px 10px;
-    cursor:pointer;
-  }
-  .viewer-close:hover{
-    background:rgba(255,255,255,0.15);
-  }
-  #viewerFrame{
-    width:100%;
-    height:calc(100% - 44px);
-    border:0;
-    background:#f5f6f7;
-  }
-</style>
-
+<!-- Document Viewer Dialog -->
 <dialog id="viewer" aria-label="Document viewer">
-  <div class="viewer-head">
+  <div class="viewer-header">
     <div class="viewer-title" id="viewerTitle">Document</div>
-    <button type="button" class="viewer-close" id="closeViewer">Close</button>
+    <button type="button" class="close-btn" id="closeViewer">Close</button>
   </div>
   <iframe id="viewerFrame"></iframe>
 </dialog>
-<script>
-window.addEventListener('DOMContentLoaded', function () {
-  var dlg   = document.getElementById('viewer');
-  var frame = document.getElementById('viewerFrame');
-  var btn   = document.getElementById('closeViewer');
 
-  function closeViewer() {
-    if (frame) frame.src = 'about:blank';
-    if (dlg && dlg.open) dlg.close();
+<!-- Delete Confirmation Modal -->
+<dialog id="deleteModal" aria-label="Delete confirmation">
+  <div class="modal-content delete-modal-content">
+    <div class="modal-header delete-modal-header">
+      <h3>Delete Document</h3>
+    </div>
+    <div class="modal-body delete-modal-body">
+      <div class="delete-warning">
+        <strong>This action cannot be undone.</strong>
+      </div>
+      <p></p>
+      <div class="document-info">
+        <strong>Document:</strong> <span id="deleteDocumentName"></span>
+      </div>
+      <div class="delete-confirmation">
+        <label class="checkbox-container">
+          <input type="checkbox" id="deleteConfirmCheck">
+          <span class="checkmark"></span>
+          I understand this action is permanent and cannot be reversed
+        </label>
+      </div>
+    </div>
+    <div class="modal-actions delete-modal-actions">
+      <button type="button" class="btn btn-secondary" id="cancelDelete">Cancel</button>
+      <button type="button" class="btn btn-danger" id="confirmDelete" disabled>Delete Document</button>
+    </div>
+  </div>
+</dialog>
+
+<!-- Add Client Modal -->
+<dialog id="addClientModal" aria-label="Add new client">
+  <div class="modal-content add-client-modal-content">
+    <div class="modal-header add-client-modal-header">
+      <h3>Add New Client</h3>
+      <button type="button" class="modal-close-btn" onclick="closeAddClientModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label for="clientNameInput">Client Name</label>
+        <input type="text" class="form-input" id="clientNameInput" placeholder="John Smith" autocomplete="off">
+        <div class="input-help">Enter the client's full name (first and last)</div>
+      </div>
+      
+      <div class="form-group">
+        <label>Initial Documents (Optional)</label>
+        <div class="modal-upload-area">
+          <input type="file" class="modal-upload-input" id="clientFileUpload" multiple accept=".pdf,.doc,.docx,.xlsx,.ppt,.pptx">
+          <div class="modal-upload-text">
+            <div class="upload-icon">📄</div>
+            <div>Drop files here or click to upload</div>
+            <div class="upload-hint">Upload documents for this client</div>
+          </div>
+        </div>
+        <div id="selectedFilesList" class="selected-files"></div>
+      </div>
+      
+      <div class="processing-info">
+        <strong>Note:</strong> After creating the client, it may take 1-2 minutes for uploaded documents to appear in the system while they are being processed.
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-secondary" onclick="closeAddClientModal()">Cancel</button>
+      <button type="button" class="btn btn-primary" id="createClientBtn" onclick="createNewClient()">Create Client</button>
+    </div>
+  </div>
+</dialog>
+
+<script>
+// Rate limiting variables
+let lastGenerationTime = 0;
+const GENERATION_COOLDOWN = 10000; // 10 seconds in milliseconds
+const MAX_CONCURRENT_GENERATIONS = 5;
+  
+// Dynamic client data - will be populated from Vertesia
+let clientsData = {};
+
+// Document data - starts empty, will be populated by API
+let documentsData = [];
+
+let currentClient = null;
+let sortOrder = 'desc';
+let documentsVisible = true;
+let selectedFiles = [];
+  
+// Upload Queue Variables (background processing)
+let uploadQueue = [];
+let isUploadProcessing = false;
+let uploadQueueId = 0;
+  
+// Load clients dynamically from Vertesia
+async function loadClientsFromVertesia() {
+  try {
+    console.log('Loading clients from Vertesia...');
+    
+    const response = await fetch('https://api.vertesia.io/api/v1/objects?limit=1000&offset=0', {
+      method: 'GET',
+      headers: {
+        'Authorization': 'Bearer sk-544583102491bf69b0351418bbdd2aa9',
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    if (!response.ok) {
+      throw new Error(`Failed to fetch documents: ${response.status}`);
+    }
+    
+    const documents = await response.json();
+    console.log(`Found ${documents.length} documents in Vertesia`);
+    
+    // Extract unique client names with better logic
+    const clientNamesMap = new Map();
+    
+    documents.forEach(doc => {
+      let clientName = null;
+      
+      // Check document properties first
+      if (doc.properties && doc.properties.client) {
+        clientName = doc.properties.client;
+      }
+      // Enhanced extraction from document name
+      else if (doc.name) {
+        // Pattern 1: Standard " - " format
+        if (doc.name.includes(' - ')) {
+          clientName = doc.name.split(' - ')[0].trim();
+        }
+        // Pattern 2: Underscore separated
+        else if (doc.name.includes('_')) {
+          const parts = doc.name.split('_');
+          if (parts.length >= 2) {
+            clientName = `${parts[0]} ${parts[1]}`;
+          }
+        }
+        // Pattern 3: Look for common name patterns
+        else {
+          const nameMatch = doc.name.match(/^([A-Z][a-z]+\s+[A-Z][a-z]+)/);
+          if (nameMatch) {
+            clientName = nameMatch[1];
+          }
+        }
+      }
+      
+      // Clean up and validate client name
+      if (clientName) {
+        clientName = clientName.replace(/\.(pdf|docx?|xlsx?|pptx?)$/i, '').trim();
+        
+        // Common document/business terms that definitely aren't first names
+        const documentTerms = [
+          'analysis', 'financial', 'statement', 'document', 'report', 
+          'portfolio', 'quarterly', 'tax', 'retirement', 'risk',
+          'assessment', 'meeting', 'preparation', 'summary', 'review',
+          'invoice', 'receipt', 'balance', 'transaction', 'account',
+          'client', 'customer', 'prospect', 'lead', 'contact'
+        ];
+        
+        // Split name and check components
+        const nameParts = clientName.split(/[\s_-]+/);
+        
+        // Basic validation checks
+        const hasValidStructure = nameParts.length >= 2 && nameParts.length <= 4;
+        const firstWord = nameParts[0].toLowerCase();
+        const lastWord = nameParts[nameParts.length - 1].toLowerCase();
+        
+        // Check if this looks like a real person's name
+        const isLikelyPersonName = 
+          hasValidStructure &&
+          !documentTerms.includes(firstWord) &&
+          !documentTerms.includes(lastWord) &&
+          /^[A-Z][a-z]/.test(nameParts[0]) &&
+          /^[A-Z][a-z]/.test(nameParts[nameParts.length - 1]) &&
+          nameParts.every(part => part.length > 1) &&
+          !clientName.match(/\d{2,}/) &&
+          !clientName.includes('@') &&
+          clientName.length < 50;
+        
+        // Only process if it passes all validation
+        if (isLikelyPersonName) {
+          clientName = nameParts.join(' ');
+          
+          // Normalize the name for comparison
+          const normalizedName = clientName.toLowerCase()
+            .replace(/\s+/g, ' ')
+            .trim();
+          
+          // If we haven't seen this normalized name before
+          if (!clientNamesMap.has(normalizedName)) {
+            clientNamesMap.set(normalizedName, clientName);
+          } else {
+            // Keep the version with proper capitalization
+            const existing = clientNamesMap.get(normalizedName);
+            if (existing === existing.toLowerCase() && clientName !== clientName.toLowerCase()) {
+              clientNamesMap.set(normalizedName, clientName);
+            }
+          }
+        }
+      }
+    });
+    
+    // Convert to array, sort alphabetically, then convert to clientsData format
+    const sortedEntries = Array.from(clientNamesMap.entries()).sort((a, b) => 
+      a[1].localeCompare(b[1])
+    );
+    
+    clientsData = {};
+    sortedEntries.forEach(([normalizedName, displayName]) => {
+      const clientId = normalizedName.replace(/[^a-z0-9\s]/g, '').replace(/\s+/g, '');
+      clientsData[clientId] = { name: displayName };
+    });
+    
+    console.log('Loaded unique clients in A-Z order:', Object.values(clientsData).map(c => c.name));
+    
+    renderClients();
+    
+    if (!currentClient || !clientsData[currentClient]) {
+      const firstClientId = Object.keys(clientsData)[0];
+      if (firstClientId) {
+        switchClient(firstClientId);
+      }
+    } else {
+      await loadClientDocuments(currentClient);
+    }
+    
+  } catch (error) {
+    console.error('Failed to load clients from Vertesia:', error);
+  }
+}
+
+// AI Profile Functions
+function checkClientProfile(clientId) {
+  const client = clientsData[clientId];
+  if (!client) return false;
+  
+  const nameParts = client.name.split(' ');
+  const firstName = nameParts[0];
+  const lastName = nameParts[1] || '';
+  
+  return documentsData.some(doc => {
+    if (doc.client !== clientId) return false;
+    
+    const docNameLower = doc.name.toLowerCase();
+    
+    const hasAIProfile = docNameLower.includes('ai_profile') || 
+                        docNameLower.includes('ai profile') ||
+                        docNameLower.includes('aiprofile');
+    
+    const hasClientName = docNameLower.includes(firstName.toLowerCase()) &&
+                         (lastName === '' || docNameLower.includes(lastName.toLowerCase()));
+    
+    return hasAIProfile && hasClientName;
+  });
+}
+
+function updateProfileStatus() {
+  const profileStatus = document.getElementById('profileStatus');
+  
+  if (!currentClient || !clientsData[currentClient]) {
+    profileStatus.innerHTML = '';
+    return;
+  }
+  
+  const hasProfile = checkClientProfile(currentClient);
+  
+  if (hasProfile) {
+    profileStatus.innerHTML = `
+      <div class="profile-complete-inline">
+        <span class="status-light-inline green"></span>
+        <span>AI Profile Complete</span>
+      </div>
+    `;
+  } else {
+    profileStatus.innerHTML = `
+      <div class="profile-needed-inline">
+        <span class="status-light-inline red"></span>
+        <span>AI Profile Required</span>
+        <button class="generate-profile-btn-inline" onclick="generateAIProfile()">
+          Generate
+        </button>
+      </div>
+    `;
+  }
+}
+
+async function generateAIProfile() {
+  if (!currentClient || !clientsData[currentClient]) {
+    alert('Please select a client first');
+    return;
   }
 
-  if (btn) btn.addEventListener('click', closeViewer);
+  const now = Date.now();
+  const timeSinceLastGeneration = now - lastGenerationTime;
+  const activeGenerations = documentQueue.activeGenerations.size;
+  
+  if (timeSinceLastGeneration < GENERATION_COOLDOWN) {
+    const remainingTime = Math.ceil((GENERATION_COOLDOWN - timeSinceLastGeneration) / 1000);
+    alert(`Please wait ${remainingTime} more seconds before generating another document.`);
+    return;
+  }
+  
+  if (activeGenerations >= MAX_CONCURRENT_GENERATIONS) {
+    alert(`Maximum of ${MAX_CONCURRENT_GENERATIONS} documents can be generated at once. Please wait for some to complete.`);
+    return;
+  }
 
-  dlg.addEventListener('click', function (e) {
-    var r = dlg.getBoundingClientRect();
-    var outside = e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom;
+  const profileBtn = document.querySelector('.generate-profile-btn, .generate-profile-btn-inline');
+  if (profileBtn) {
+    profileBtn.disabled = true;
+    profileBtn.textContent = 'Generating...';
+  }
+
+  lastGenerationTime = now;
+  documentQueue.addGeneration('AI Profile', currentClient);
+
+  try {
+    await fetch('https://api.vertesia.io/api/v1/execute/async', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer sk-544583102491bf69b0351418bbdd2aa9'
+      },
+      body: JSON.stringify({
+        "type": "conversation",
+        "interaction": "TESTFinancialProfileGenerator@2",
+        "data": {
+          "task": `For ${clientsData[currentClient].name} create an AI Profile`
+        },
+        "config": {
+          "environment": "681915c6a01fb262a410c161",
+          "model": "publishers/anthropic/models/claude-3-7-sonnet"
+        }
+      })
+    });
+    
+    console.log(`AI Profile generation started for ${clientsData[currentClient].name}`);
+  } catch (error) {
+    console.error('AI Profile generation error:', error);
+    alert('Failed to generate AI Profile. Please try again.');
+  } finally {
+    if (profileBtn) {
+      profileBtn.disabled = false;
+      profileBtn.textContent = profileBtn.classList.contains('generate-profile-btn-inline') ? 'Generate' : 'Generate AI Profile';
+    }
+  }
+}
+
+// Document Queue Class
+class DocumentQueue {
+  constructor() {
+    this.activeGenerations = new Map();
+    this.timers = new Map();
+  }
+  
+  addGeneration(docType, clientId) {
+    const id = Date.now() + Math.random();
+    const generation = {
+      id,
+      docType,
+      clientId,
+      clientName: clientsData[clientId].name,
+      startTime: Date.now(),
+      estimatedDuration: 5 * 60 * 1000
+    };
+    
+    this.activeGenerations.set(id, generation);
+    this.startTimer(id);
+    this.updateQueueDisplay();
+    return id;
+  }
+  
+  startTimer(id) {
+    const timer = setInterval(() => {
+      const generation = this.activeGenerations.get(id);
+      if (!generation) {
+        clearInterval(timer);
+        return;
+      }
+      
+      const elapsed = Date.now() - generation.startTime;
+      if (elapsed >= generation.estimatedDuration) {
+        this.completeGeneration(id);
+      }
+      this.updateQueueDisplay();
+    }, 1000);
+    
+    this.timers.set(id, timer);
+  }
+  
+  completeGeneration(id) {
+    const generation = this.activeGenerations.get(id);
+    if (generation) {
+      const newDoc = {
+        id: Date.now(),
+        name: generation.docType,
+        date: new Date().toISOString().split('T')[0],
+        client: generation.clientId,
+        type: 'generated'
+      };
+      
+      documentsData.unshift(newDoc);
+      if (generation.clientId === currentClient) {
+        renderDocuments();
+        updateProfileStatus();
+      }
+    }
+    
+    this.removeGeneration(id);
+  }
+  
+  removeGeneration(id) {
+    clearInterval(this.timers.get(id));
+    this.timers.delete(id);
+    this.activeGenerations.delete(id);
+    this.updateQueueDisplay();
+  }
+  
+  updateQueueDisplay() {
+    const itemsElement = document.getElementById('queueItems');
+    const countElement = document.getElementById('generationActiveCount');
+    
+    const activeCount = this.activeGenerations.size;
+    if (countElement) {
+      countElement.textContent = activeCount;
+    }
+    
+    if (itemsElement) {
+      if (activeCount === 0) {
+        itemsElement.innerHTML = '<div class="empty-queue">No documents generating</div>';
+      } else {
+        itemsElement.innerHTML = '';
+        
+        this.activeGenerations.forEach(generation => {
+          const elapsed = Date.now() - generation.startTime;
+          const remaining = Math.max(0, generation.estimatedDuration - elapsed);
+          const minutes = Math.floor(remaining / 60000);
+          const seconds = Math.floor((remaining % 60000) / 1000);
+          
+          const div = document.createElement('div');
+          div.className = 'queue-item';
+          div.innerHTML = `
+            <div class="spinner"></div>
+            <div class="queue-item-content">
+              <div class="queue-item-name">${generation.docType}</div>
+              <div class="queue-item-client">${generation.clientName}</div>
+            </div>
+            <span class="queue-timer">${minutes}:${seconds.toString().padStart(2, '0')}</span>
+            <button class="queue-cancel" onclick="documentQueue.removeGeneration(${generation.id})">✕</button>
+          `;
+          itemsElement.appendChild(div);
+        });
+      }
+    }
+  }
+}
+
+const documentQueue = new DocumentQueue();
+
+// Viewer Functions
+function openFormattedViewer(markdownContent, title) {
+  const dlg = document.getElementById('viewer');
+  document.getElementById('viewerTitle').textContent = title;
+  
+  const htmlContent = marked.parse(markdownContent);
+  
+  const viewerFrame = document.getElementById('viewerFrame');
+  viewerFrame.outerHTML = `<div id="viewerFrame" class="viewer-content">${htmlContent}</div>`;
+  
+  dlg.showModal();
+}
+
+function closeViewer() {
+  const dlg = document.getElementById('viewer');
+  const viewerFrame = document.getElementById('viewerFrame');
+  
+  viewerFrame.outerHTML = '<iframe id="viewerFrame"></iframe>';
+  
+  if (dlg?.open) dlg.close();
+}
+
+function openViewer(url, title) {
+  const dlg = document.getElementById('viewer');
+  document.getElementById('viewerTitle').textContent = title || 'Document';
+  document.getElementById('viewerFrame').src = url;
+  dlg.showModal();
+}
+
+// Generate document with free-form query
+async function generateDocument() {
+  if (!currentClient || !clientsData[currentClient]) {
+    alert('Please select a client first');
+    return;
+  }
+  
+  // Check if client has AI profile before generating documents
+  if (!checkClientProfile(currentClient)) {
+    alert('Please generate an AI Profile for this client first before creating other documents.');
+    return;
+  }
+  
+  // Rate limiting checks
+  const now = Date.now();
+  const timeSinceLastGeneration = now - lastGenerationTime;
+  const activeGenerations = documentQueue.activeGenerations.size;
+  
+  if (timeSinceLastGeneration < GENERATION_COOLDOWN) {
+    const remainingTime = Math.ceil((GENERATION_COOLDOWN - timeSinceLastGeneration) / 1000);
+    alert(`Please wait ${remainingTime} more seconds before generating another document.`);
+    return;
+  }
+  
+  if (activeGenerations >= MAX_CONCURRENT_GENERATIONS) {
+    alert(`Maximum of ${MAX_CONCURRENT_GENERATIONS} documents can be generated at once. Please wait for some to complete.`);
+    return;
+  }
+  
+  const queryInput = document.getElementById('queryInput');
+  const query = queryInput.value.trim();
+  
+  if (!query || query.length < 10) {
+    alert('Please enter a detailed description of what you want to generate');
+    return;
+  }
+  
+  lastGenerationTime = now;
+  
+  // Create a shortened title for display (first 50 chars)
+  const displayTitle = query.length > 50 ? query.substring(0, 50) + '...' : query;
+  
+  // Add to queue with the query
+  documentQueue.addGeneration(displayTitle, currentClient);
+  
+  // Clear the input
+  queryInput.value = '';
+  document.getElementById('charCount').textContent = '0 / 500';
+  document.getElementById('generateBtn').disabled = true;
+  
+  try {
+    await fetch('https://api.vertesia.io/api/v1/execute/async', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer sk-544583102491bf69b0351418bbdd2aa9'
+      },
+      body: JSON.stringify({
+        "type": "conversation",
+        "interaction": "AdvisorAssistant@2",
+        "data": {
+          "task": `For ${clientsData[currentClient].name}: ${query}`
+        },
+        "config": {
+          "environment": "681915c6a01fb262a410c161",
+          "model": "publishers/anthropic/models/claude-3-7-sonnet"
+        }
+      })
+    });
+    
+    console.log(`Document generation started: "${query}" for ${clientsData[currentClient].name}`);
+  } catch (error) {
+    console.error('API error:', error);
+    alert('Failed to start document generation. Please try again.');
+  }
+}
+
+// Search documents
+function searchDocuments() {
+  const query = document.getElementById('searchBar').value.toLowerCase();
+  renderDocuments(query);
+}
+
+// Sort documents
+function sortDocuments() {
+  sortOrder = sortOrder === 'desc' ? 'asc' : 'desc';
+  renderDocuments();
+}
+
+// Toggle documents
+function toggleDocuments() {
+  documentsVisible = !documentsVisible;
+  const docItems = document.querySelectorAll('.doc-item');
+  docItems.forEach(item => {
+    item.style.display = documentsVisible ? 'flex' : 'none';
+  });
+}
+
+// Render documents
+function renderDocuments(searchQuery = '') {
+  const docsList = document.getElementById('documentsList');
+  docsList.innerHTML = '';
+  
+  updateProfileStatus();
+  
+  let filteredDocs = documentsData.filter(doc => 
+    (doc.client === currentClient || doc.client === 'all') &&
+    (searchQuery === '' || doc.name.toLowerCase().includes(searchQuery))
+  );
+  
+  if (filteredDocs.length === 0) {
+    const emptyDiv = document.createElement('div');
+    emptyDiv.className = 'empty-state';
+    emptyDiv.textContent = 'No documents found. Try uploading files or generating new documents.';
+    docsList.appendChild(emptyDiv);
+    return;
+  }
+  
+  filteredDocs.sort((a, b) => {
+    const dateA = new Date(a.date);
+    const dateB = new Date(b.date);
+    return sortOrder === 'desc' ? dateB - dateA : dateA - dateB;
+  });
+  
+  filteredDocs.forEach((doc, index) => {
+    let formattedDate = '';
+    if (doc.date) {
+      const dateObj = new Date(doc.date);
+      if (!isNaN(dateObj)) {
+        const options = { year: 'numeric', month: 'short', day: 'numeric' };
+        formattedDate = `Created: ${dateObj.toLocaleDateString('en-US', options)}`;
+      } else {
+        formattedDate = `Created: ${doc.date}`;
+      }
+    }
+    
+    const div = document.createElement('div');
+    div.className = 'doc-item';
+    div.innerHTML = `
+      <div class="doc-info">
+        <div class="doc-name">${doc.name}</div>
+        <div class="doc-date">${formattedDate}</div>
+      </div>
+      <div class="doc-actions">
+        <span class="doc-action" onclick="viewDocument('${doc.id}')">view</span>
+        <span class="doc-action" onclick="downloadDocument('${doc.id}')">download</span>
+        <span class="doc-action" onclick="deleteDocument('${doc.id}')">delete</span>
+      </div>
+    `;
+    docsList.appendChild(div);
+  });
+}
+
+// Initialize
+async function init() {
+  // Initialize query input
+  const queryInput = document.getElementById('queryInput');
+  const charCount = document.getElementById('charCount');
+  const generateBtn = document.getElementById('generateBtn');
+
+  if (queryInput) {
+    queryInput.addEventListener('input', () => {
+      const length = queryInput.value.trim().length;
+      charCount.textContent = `${length} / 500`;
+      
+      generateBtn.disabled = length < 10;
+      
+      if (length > 450) {
+        charCount.style.color = 'var(--warn)';
+      } else {
+        charCount.style.color = 'var(--muted)';
+      }
+    });
+  }
+  
+  // Load clients from Vertesia first
+  await loadClientsFromVertesia();
+  
+  // Initialize viewer
+  document.getElementById('closeViewer').addEventListener('click', closeViewer);
+  
+  document.getElementById('viewer').addEventListener('click', (e) => {
+    const r = e.target.getBoundingClientRect();
+    const outside = e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom;
     if (outside) closeViewer();
   });
-  document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape' && dlg.open) closeViewer();
+  
+  // Initialize delete modal
+  document.getElementById('cancelDelete').addEventListener('click', cancelDocumentDelete);
+  document.getElementById('confirmDelete').addEventListener('click', confirmDocumentDelete);
+  
+  // Checkbox validation for delete button
+  document.getElementById('deleteConfirmCheck').addEventListener('change', function() {
+    document.getElementById('confirmDelete').disabled = !this.checked;
   });
-});
+  
+  // Add client modal file handling
+  document.getElementById('clientFileUpload').addEventListener('change', function(event) {
+    const files = Array.from(event.target.files);
+    selectedFiles = [...selectedFiles, ...files];
+    updateSelectedFilesList();
+    event.target.value = '';
+  });
+  
+  // Escape key handling
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && document.getElementById('viewer').open) closeViewer();
+    if (e.key === 'Escape' && document.getElementById('deleteModal').open) cancelDocumentDelete();
+    if (e.key === 'Escape' && document.getElementById('addClientModal').open) closeAddClientModal();
+  });
+}
+
+// Render client list
+function renderClients() {
+  const clientList = document.getElementById('clientList');
+  clientList.innerHTML = '';
+  
+  if (Object.keys(clientsData).length === 0) {
+    const emptyDiv = document.createElement('div');
+    emptyDiv.className = 'empty-state';
+    emptyDiv.textContent = 'No clients found. Add a client to get started.';
+    clientList.appendChild(emptyDiv);
+    return;
+  }
+  
+  const sortedClients = Object.entries(clientsData).sort((a, b) => {
+    const namePartsA = a[1].name.split(' ');
+    const namePartsB = b[1].name.split(' ');
+    
+    const lastNameA = namePartsA[namePartsA.length - 1];
+    const lastNameB = namePartsB[namePartsB.length - 1];
+    
+    const lastNameCompare = lastNameA.localeCompare(lastNameB);
+    if (lastNameCompare !== 0) return lastNameCompare;
+    
+    const firstNameA = namePartsA[0];
+    const firstNameB = namePartsB[0];
+    return firstNameA.localeCompare(firstNameB);
+  });
+  
+  sortedClients.forEach(([clientId, client]) => {
+    const div = document.createElement('div');
+    div.className = `client-item ${clientId === currentClient ? 'active' : ''}`;
+    
+    const nameParts = client.name.split(' ');
+    const firstName = nameParts[0];
+    const lastName = nameParts[nameParts.length - 1];
+    const displayName = `${lastName}, ${firstName}`;
+    
+    div.textContent = displayName;
+    div.onclick = () => switchClient(clientId);
+    clientList.appendChild(div);
+  });
+}
+
+// Switch client
+async function switchClient(clientId) {
+  currentClient = clientId;
+  const client = clientsData[clientId];
+  
+  if (!client) return;
+  
+  document.getElementById('documentsHeader').querySelector('span').textContent = `${client.name} Documents`;
+  renderClients();
+  
+  await loadClientDocuments(clientId);
+  updateProfileStatus();
+}
+
+async function loadClientDocuments(clientId) {
+  const client = clientsData[clientId];
+  
+  if (!client) return;
+  
+  try {
+    const response = await fetch(`https://api.vertesia.io/api/v1/objects?name=${encodeURIComponent(client.name)}&limit=50`, {
+      method: 'GET',
+      headers: {
+        'Authorization': 'Bearer sk-544583102491bf69b0351418bbdd2aa9',
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    if (response.ok) {
+      const result = await response.json();
+      
+      documentsData = result.map(doc => ({
+        id: doc.id,
+        name: doc.name,
+        date: doc.created_at || doc.updated_at,
+        client: clientId,
+        type: 'vertesia',
+        vertesiaId: doc.id
+      }));
+      
+      renderDocuments();
+    }
+  } catch (error) {
+    console.error('Failed to load client documents:', error);
+  }
+}
+
+// Add Client Functions
+function openAddClientModal() {
+  document.getElementById('addClientModal').showModal();
+  document.getElementById('clientNameInput').focus();
+  selectedFiles = [];
+  updateSelectedFilesList();
+}
+
+function closeAddClientModal() {
+  document.getElementById('addClientModal').close();
+  document.getElementById('clientNameInput').value = '';
+  selectedFiles = [];
+  updateSelectedFilesList();
+}
+
+function updateSelectedFilesList() {
+  const filesList = document.getElementById('selectedFilesList');
+  filesList.innerHTML = '';
+  
+  selectedFiles.forEach((file, index) => {
+    const fileItem = document.createElement('div');
+    fileItem.className = 'file-item';
+    fileItem.innerHTML = `
+      <span>${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)</span>
+      <button type="button" class="file-remove" onclick="removeFile(${index})">Remove</button>
+    `;
+    filesList.appendChild(fileItem);
+  });
+}
+
+function removeFile(index) {
+  selectedFiles.splice(index, 1);
+  updateSelectedFilesList();
+}
+
+async function createNewClient() {
+  const clientName = document.getElementById('clientNameInput').value.trim();
+  
+  if (!clientName) {
+    alert('Please enter a client name');
+    return;
+  }
+  
+  if (clientName.split(' ').length < 2) {
+    alert('Please enter both first and last name');
+    return;
+  }
+  
+  const existingClient = Object.values(clientsData).find(
+    client => client.name.toLowerCase() === clientName.toLowerCase()
+  );
+  
+  if (existingClient) {
+    alert('A client with this name already exists');
+    return;
+  }
+  
+  const createBtn = document.getElementById('createClientBtn');
+  createBtn.disabled = true;
+  createBtn.textContent = 'Creating...';
+  
+  try {
+    if (selectedFiles.length > 0) {
+      createBtn.textContent = 'Adding documents to queue...';
+      
+      selectedFiles.forEach(file => {
+        const newFileName = generateFileName(clientName, file.name);
+        uploadQueue.push({
+          id: ++uploadQueueId,
+          file: file,
+          originalName: file.name,
+          newName: newFileName,
+          clientName: clientName
+        });
+        console.log(`Added to queue: ${file.name} -> ${newFileName}`);
+      });
+      
+      processUploadQueue();
+    }
+    
+    const clientId = clientName.toLowerCase().replace(/[^a-z0-9\s]/g, '').replace(/\s+/g, '');
+    clientsData[clientId] = { name: clientName };
+    
+    createBtn.textContent = 'Refreshing...';
+    await loadClientsFromVertesia();
+    
+    if (clientsData[clientId]) {
+      switchClient(clientId);
+    }
+    
+    closeAddClientModal();
+    
+    const fileCount = selectedFiles.length;
+    let message = `Client "${clientName}" created successfully!`;
+    if (fileCount > 0) {
+      message += ` ${fileCount} document(s) are being processed in the background.`;
+    }
+    alert(message);
+    
+    if (fileCount > 0) {
+      const refreshDelay = Math.max(fileCount * 3000, 10000);
+      setTimeout(() => {
+        loadClientDocuments(clientId);
+      }, refreshDelay);
+    }
+    
+  } catch (error) {
+    console.error('Error creating client:', error);
+    alert(`Failed to create client: ${error.message}`);
+  } finally {
+    createBtn.disabled = false;
+    createBtn.textContent = 'Create Client';
+  }
+}
+
+// File upload
+function generateFileName(clientName, originalFileName) {
+  if (!clientName.trim()) return originalFileName;
+  
+  const nameParts = clientName.trim().split(' ');
+  const firstName = nameParts[0] || '';
+  const lastName = nameParts[1] || '';
+  
+  const fileNameWithoutExt = originalFileName.replace(/\.[^/.]+$/, '');
+  const extension = originalFileName.split('.').pop();
+  
+  const abbreviatedTitle = fileNameWithoutExt
+    .split(' ')
+    .slice(0, 3)
+    .join('_')
+    .substring(0, 20)
+    .replace(/[^a-zA-Z0-9_]/g, '');
+  
+  return `${firstName}_${lastName}_${abbreviatedTitle}.${extension}`;
+}
+
+async function handleFileUpload(event) {
+  const files = Array.from(event.target.files);
+  if (files.length === 0) return;
+  
+  if (!currentClient || !clientsData[currentClient]) {
+    alert('Please select a client first');
+    return;
+  }
+  
+  const clientName = clientsData[currentClient].name;
+  
+  files.forEach(file => {
+    const newFileName = generateFileName(clientName, file.name);
+    uploadQueue.push({
+      id: ++uploadQueueId,
+      file: file,
+      originalName: file.name,
+      newName: newFileName,
+      clientName: clientName
+    });
+  });
+  
+  processUploadQueue();
+  
+  const refreshDelay = Math.max(files.length * 3000, 10000);
+  setTimeout(() => {
+    loadClientDocuments(currentClient);
+  }, refreshDelay);
+  
+  alert(`${files.length} file(s) added to upload queue. They will be processed in the background.`);
+  event.target.value = '';
+}
+
+async function processUploadQueue() {
+  if (isUploadProcessing || uploadQueue.length === 0) return;
+  
+  isUploadProcessing = true;
+  
+  while (uploadQueue.length > 0) {
+    const queueItem = uploadQueue.shift();
+    
+    try {
+      await uploadSingleFile(queueItem);
+      console.log(`Successfully uploaded: ${queueItem.newName}`);
+    } catch (error) {
+      console.error(`Failed to upload: ${queueItem.newName}`, error);
+    }
+    
+    if (uploadQueue.length > 0) {
+      const delay = 3000 + Math.random() * 2000;
+      await new Promise(resolve => setTimeout(resolve, delay));
+    }
+  }
+  
+  isUploadProcessing = false;
+}
+
+async function uploadSingleFile(queueItem) {
+  const file = queueItem.file;
+  const fileName = queueItem.newName;
+  
+  const urlResponse = await fetch('https://api.vertesia.io/api/v1/objects/upload-url', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer sk-544583102491bf69b0351418bbdd2aa9'
+    },
+    body: JSON.stringify({
+      "name": fileName,
+      "mime_type": file.type || "application/pdf"
+    })
+  });
+  
+  if (!urlResponse.ok) {
+    throw new Error(`Failed to get upload URL: ${urlResponse.status}`);
+  }
+  
+  const uploadData = await urlResponse.json();
+  
+  const fileUploadResponse = await fetch(uploadData.url, {
+    method: 'PUT',
+    body: file
+  });
+  
+  if (!fileUploadResponse.ok) {
+    throw new Error(`Failed to upload file: ${fileUploadResponse.status}`);
+  }
+  
+  const createObjectResponse = await fetch('https://api.vertesia.io/api/v1/objects', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer sk-544583102491bf69b0351418bbdd2aa9'
+    },
+    body: JSON.stringify({
+      "name": fileName,
+      "description": `Document uploaded for ${queueItem.clientName}`,
+      "content": {
+        "source": uploadData.id,
+        "type": file.type || "application/pdf",
+        "name": fileName
+      },
+      "properties": {
+        "client": queueItem.clientName,
+        "original_name": queueItem.originalName,
+        "uploaded_at": new Date().toISOString()
+      }
+    })
+  });
+  
+  if (!createObjectResponse.ok) {
+    const errorText = await createObjectResponse.text();
+    throw new Error(`Failed to create object: ${createObjectResponse.status}`);
+  }
+  
+  return await createObjectResponse.json();
+}
+
+// Document actions
+async function viewDocument(id) {
+  const doc = documentsData.find(d => d.id === id);
+  
+  if (!doc || !doc.vertesiaId) {
+    alert('Cannot view this document - missing ID');
+    return;
+  }
+  
+  try {
+    console.log(`Getting object details for ${doc.vertesiaId}...`);
+    const objectResponse = await fetch(`https://api.vertesia.io/api/v1/objects/${doc.vertesiaId}`, {
+      headers: { 
+        'Authorization': 'Bearer sk-544583102491bf69b0351418bbdd2aa9' 
+      }
+    });
+    
+    if (!objectResponse.ok) {
+      throw new Error(`Failed to get object: ${objectResponse.status}`);
+    }
+    
+    const objectData = await objectResponse.json();
+    
+    console.log('Full object data:', objectData);
+    console.log('Content type:', objectData.content?.type);
+    console.log('Document name:', doc.name);
+    
+    const fileUri = objectData.content?.source;
+    if (!fileUri) {
+      throw new Error('No file source found in object');
+    }
+    
+    const downloadResponse = await fetch('https://api.vertesia.io/api/v1/objects/download-url', {
+      method: 'POST',
+      headers: { 
+        'Authorization': 'Bearer sk-544583102491bf69b0351418bbdd2aa9',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ "file": fileUri })
+    });
+    
+    if (!downloadResponse.ok) {
+      throw new Error(`Failed to get download URL: ${downloadResponse.status}`);
+    }
+    
+    const downloadData = await downloadResponse.json();
+    
+    const contentResponse = await fetch(downloadData.url);
+    const contentType = contentResponse.headers.get('content-type');
+    console.log('Actual content type from URL:', contentType);
+    
+    if (contentType?.includes('text/') || 
+        objectData.content?.type === 'text/markdown' ||
+        objectData.content?.type?.includes('text/')) {
+      
+      const textContent = await contentResponse.text();
+      console.log('Text content preview:', textContent.substring(0, 500));
+      
+      if (textContent.includes('# ') || textContent.includes('## ') || 
+          objectData.content?.type === 'text/markdown') {
+        console.log('Treating as markdown');
+        openFormattedViewer(textContent, doc.name);
+      } else {
+        console.log('Treating as plain text/HTML');
+        const dlg = document.getElementById('viewer');
+        document.getElementById('viewerTitle').textContent = doc.name;
+        const viewerFrame = document.getElementById('viewerFrame');
+        viewerFrame.outerHTML = `<div id="viewerFrame" class="viewer-content"><pre style="white-space: pre-wrap; font-family: inherit;">${textContent}</pre></div>`;
+        dlg.showModal();
+      }
+      
+    } else {
+      console.log('Treating as binary file, opening in iframe');
+      openViewer(downloadData.url, doc.name);
+    }
+    
+  } catch (error) {
+    console.error('View document error:', error);
+    alert(`Failed to view document: ${error.message}`);
+  }
+}
+
+async function downloadDocument(id) {
+  const doc = documentsData.find(d => d.id === id);
+  
+  if (!doc || !doc.vertesiaId) {
+    alert('Cannot download this document - missing ID');
+    return;
+  }
+  
+  try {
+    console.log(`Getting object details for download: ${doc.vertesiaId}...`);
+    const objectResponse = await fetch(`https://api.vertesia.io/api/v1/objects/${doc.vertesiaId}`, {
+      headers: { 
+        'Authorization': 'Bearer sk-544583102491bf69b0351418bbdd2aa9' 
+      }
+    });
+    
+    if (!objectResponse.ok) {
+      throw new Error(`Failed to get object: ${objectResponse.status}`);
+    }
+    
+    const objectData = await objectResponse.json();
+    const fileUri = objectData.content?.source;
+    
+    if (!fileUri) {
+      throw new Error('No file source found in object');
+    }
+    
+    console.log('Getting signed download URL...');
+    let downloadResponse = await fetch('https://api.vertesia.io/api/v1/objects/download-url', {
+      method: 'POST',
+      headers: { 
+        'Authorization': 'Bearer sk-544583102491bf69b0351418bbdd2aa9',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ 
+        "file": fileUri,
+        "format": "original"
+      })
+    });
+    
+    if (!downloadResponse.ok) {
+      console.log('Format parameter failed, trying without format...');
+      downloadResponse = await fetch('https://api.vertesia.io/api/v1/objects/download-url', {
+        method: 'POST',
+        headers: { 
+          'Authorization': 'Bearer sk-544583102491bf69b0351418bbdd2aa9',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ 
+          "file": fileUri
+        })
+      });
+    }
+    
+    if (!downloadResponse.ok) {
+      throw new Error(`Failed to get download URL: ${downloadResponse.status}`);
+    }
+    
+    const downloadData = await downloadResponse.json();
+    
+    console.log('Downloading and formatting content...');
+    const textResponse = await fetch(downloadData.url);
+    const markdownContent = await textResponse.text();
+    
+    const htmlContent = marked.parse(markdownContent);
+    
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = htmlContent;
+    tempDiv.style.cssText = `
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      line-height: 1.6;
+      color: #1f2d3d;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 30px 40px;
+    `;
+    
+    tempDiv.querySelectorAll('h1').forEach(h1 => {
+      h1.style.cssText = `
+        font-size: 28px;
+        color: #336F51;
+        border-bottom: 3px solid #336F51;
+        padding-bottom: 12px;
+        margin: 30px 0 20px 0;
+        font-weight: 700;
+      `;
+    });
+    
+    tempDiv.querySelectorAll('h2').forEach(h2 => {
+      h2.style.cssText = `
+        font-size: 22px;
+        color: #1f2d3d;
+        margin: 25px 0 15px 0;
+        font-weight: 600;
+        border-left: 4px solid #336F51;
+        padding-left: 12px;
+      `;
+    });
+    
+    tempDiv.querySelectorAll('h3').forEach(h3 => {
+      h3.style.cssText = `
+        font-size: 18px;
+        color: #1f2d3d;
+        margin: 20px 0 12px 0;
+        font-weight: 600;
+      `;
+    });
+    
+    tempDiv.querySelectorAll('p').forEach(p => {
+      p.style.cssText = 'margin-bottom: 16px; text-align: justify;';
+    });
+    
+    tempDiv.querySelectorAll('strong').forEach(strong => {
+      strong.style.cssText = 'color: #336F51; font-weight: 600;';
+    });
+    
+    tempDiv.querySelectorAll('table').forEach(table => {
+      table.style.cssText = `
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+        font-size: 14px;
+      `;
+      
+      table.querySelectorAll('th').forEach(th => {
+        th.style.cssText = `
+          background-color: #f8f9fb;
+          border: 1px solid #e0e5ea;
+          padding: 12px 8px;
+          text-align: left;
+          font-weight: 600;
+        `;
+      });
+      
+      table.querySelectorAll('td').forEach(td => {
+        td.style.cssText = `
+          border: 1px solid #e0e5ea;
+          padding: 10px 8px;
+          text-align: left;
+        `;
+      });
+    });
+    
+    document.body.appendChild(tempDiv);
+    
+    const opt = {
+      margin: 0.5,
+      filename: doc.name.replace(/\.[^/.]+$/, '') + '.pdf',
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+    };
+    
+    try {
+      await html2pdf().set(opt).from(tempDiv).save();
+      console.log(`PDF download completed: ${doc.name}`);
+    } finally {
+      document.body.removeChild(tempDiv);
+    }
+    
+  } catch (error) {
+    console.error('Download document error:', error);
+    alert(`Failed to download document: ${error.message}`);
+  }
+}
+
+// Delete Functions
+let documentToDelete = null;
+
+function deleteDocument(id) {
+  const doc = documentsData.find(d => d.id === id);
+  if (!doc) {
+    alert('Document not found');
+    return;
+  }
+  
+  documentToDelete = doc;
+  
+  document.getElementById('deleteDocumentName').textContent = doc.name;
+  
+  const checkbox = document.getElementById('deleteConfirmCheck');
+  const deleteBtn = document.getElementById('confirmDelete');
+  checkbox.checked = false;
+  deleteBtn.disabled = true;
+  
+  document.getElementById('deleteModal').showModal();
+}
+
+async function confirmDocumentDelete() {
+  if (!documentToDelete) return;
+  
+  try {
+    console.log(`Deleting document: ${documentToDelete.vertesiaId}`);
+    
+    const response = await fetch(`https://api.vertesia.io/api/v1/objects/${documentToDelete.vertesiaId}`, {
+      method: 'DELETE',
+      headers: {
+'Authorization': 'Bearer sk-544583102491bf69b0351418bbdd2aa9'
+      }
+    });
+    
+    if (!response.ok) {
+      throw new Error(`Failed to delete document: ${response.status}`);
+    }
+    
+    const result = await response.json();
+    console.log('Delete result:', result);
+    
+    documentsData = documentsData.filter(d => d.id !== documentToDelete.id);
+    
+    renderDocuments();
+    updateProfileStatus();
+    
+    document.getElementById('deleteModal').close();
+    documentToDelete = null;
+    
+    console.log(`Document deleted successfully`);
+    
+  } catch (error) {
+    console.error('Delete document error:', error);
+    alert(`Failed to delete document: ${error.message}`);
+  }
+}
+
+function cancelDocumentDelete() {
+  document.getElementById('deleteModal').close();
+  documentToDelete = null;
+}
+
+// Initialize on page load
+window.onload = init;
 </script>
 
 </body>
