@@ -1,7 +1,12 @@
 :root{
-  --primary: #336F51;
-  --primary-light: #4a8a6a;
-  --primary-dark: #2a5a43;
+  /* DayMark Color Palette */
+  --primary: #1B2B44;        /* Deep navy - main brand color */
+  --primary-light: #2a3f5f;  /* Lighter navy */
+  --primary-dark: #0f1a2b;   /* Darker navy */
+  --accent-teal: #4A9DA8;    /* Teal accent from logo */
+  --accent-gold: #C9A961;    /* Gold accent for CTAs */
+  --accent-gold-light: #d4b876;
+  
   --ink: #1f2d3d;
   --muted: #6c7a89;
   --border: #e0e5ea;
@@ -12,7 +17,7 @@
   --ok: #1f7a4d;
   --warn: #8a5a00;
   --info: #2d5699;
-  --shadow: 0 6px 18px rgba(20,26,38,.08);
+  --shadow: 0 6px 18px rgba(27,43,68,.12);
 }
 
 *{box-sizing:border-box;margin:0;padding:0}
@@ -20,10 +25,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Ubuntu,Canta
 
 /* ===== App Chrome ===== */
 .header {
-  background: #fff;
+  background: var(--primary);  /* Navy background like DayMark */
   padding: 0 32px;
   height: 72px;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid rgba(255,255,255,.1);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -32,7 +37,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Ubuntu,Canta
   left: 0;
   right: 0;
   z-index: 1000;
-  box-shadow: var(--shadow);
+  box-shadow: 0 2px 12px rgba(0,0,0,.15);
 }
 
 .logo-section {
@@ -44,7 +49,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Ubuntu,Canta
 .logo {
   width: 44px;
   height: 44px;
-  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+  background: linear-gradient(135deg, var(--accent-teal) 0%, #5bb0ba 100%);
   border-radius: 12px;
   display: flex;
   align-items: center;
@@ -57,27 +62,40 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Ubuntu,Canta
 .brand-info h1 {
   font-size: 24px;
   font-weight: 700;
-  color: var(--ink);
+  color: #fff;  /* White text on navy */
   line-height: 1.2;
 }
 
 .brand-info .subtitle {
   font-size: 12px;
-  color: var(--muted);
+  color: rgba(255,255,255,.65);
   font-weight: 500;
 }
 
 .header-title {
   font-size: 28px;
   font-weight: 300;
-  color: var(--primary);
+  color: #fff;
   letter-spacing: -0.5px;
 }
 
-.secondary-nav{background:#fff;border-bottom:1px solid var(--border);padding:0 32px;height:48px;display:flex;align-items:center;justify-content:space-between;position:fixed;left:0;right:0;top:72px;z-index:999}
-.secondary-links{display:flex;gap:32px;font-size:14px}
-.secondary-link{cursor:pointer;padding:12px 0}
-.secondary-link:hover{color:var(--primary)}
+.secondary-nav{
+  background: var(--primary);
+  border-bottom:1px solid rgba(255,255,255,.1);
+  padding:0 32px;
+  height:48px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  position:fixed;
+  left:0;
+  right:0;
+  top:72px;
+  z-index:999;
+}
+.secondary-links{display:flex;gap:32px;font-size:14px;color:rgba(255,255,255,.8)}
+.secondary-link{cursor:pointer;padding:12px 0;color:rgba(255,255,255,.8);transition:all 0.2s ease}
+.secondary-link:hover{color:#fff;border-bottom:2px solid var(--accent-teal)}
 
 /* Hero */
 .research-banner{
@@ -98,7 +116,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Ubuntu,Canta
   top: -40px;
   width: 200px;
   height: 200px;
-  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(74,157,168,0.2) 0%, transparent 70%);
   border-radius: 50%;
 }
 .research-banner h2{
@@ -123,10 +141,33 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Ubuntu,Canta
 }
 
 .panel-head{padding:14px 16px;background:var(--soft);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
-.panel-title{font-weight:800}
-.btn{border:1px solid rgba(51, 111, 81,.28);background:rgba(51, 111, 81,.08);color:var(--primary);border-radius:8px;padding:8px 12px;cursor:pointer;font-size:14px;font-weight:600;transition:all 0.2s ease}
-.btn.primary{background:var(--primary);color:#fff;border-color:var(--primary)}
-.btn:hover{opacity:0.9}
+.panel-title{font-weight:800;color:var(--primary)}
+
+.btn{
+  border:1px solid var(--accent-gold);
+  background:transparent;
+  color:var(--accent-gold);
+  border-radius:8px;
+  padding:8px 12px;
+  cursor:pointer;
+  font-size:14px;
+  font-weight:600;
+  transition:all 0.2s ease;
+}
+.btn.primary{
+  background:var(--accent-gold);
+  color:#fff;
+  border-color:var(--accent-gold);
+}
+.btn:hover{
+  background:var(--accent-gold-light);
+  color:#fff;
+  border-color:var(--accent-gold-light);
+}
+.btn.primary:hover{
+  background:var(--accent-gold-light);
+  border-color:var(--accent-gold-light);
+}
 .btn:disabled{opacity:0.5;cursor:not-allowed}
 
 .left{
@@ -157,20 +198,33 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Ubuntu,Canta
 }
 
 .left-body::-webkit-scrollbar-thumb {
-  background: var(--border);
+  background: var(--accent-teal);
   border-radius: 3px;
+  opacity: 0.5;
 }
 
 .left-body::-webkit-scrollbar-thumb:hover {
-  background: var(--muted);
+  background: var(--primary);
 }
 
 .right-body{padding:12px;overflow:auto}
 
 /* Left: Documents */
 .filters{display:flex;gap:8px;align-items:center}
-.chip{border:1px solid var(--border);background:#fff;border-radius:999px;padding:6px 10px;font-size:12px;cursor:pointer;transition:all 0.2s ease}
-.chip.active{border-color:var(--primary);color:var(--primary);box-shadow:0 0 0 2px rgba(51, 111, 81,.12)}
+.chip{
+  border:1px solid var(--border);
+  background:#fff;
+  border-radius:999px;
+  padding:6px 10px;
+  font-size:12px;
+  cursor:pointer;
+  transition:all 0.2s ease;
+}
+.chip.active{
+  border-color:var(--accent-teal);
+  color:var(--accent-teal);
+  box-shadow:0 0 0 2px rgba(74,157,168,.12);
+}
 
 .doc{
   background:#fff;
@@ -215,7 +269,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Ubuntu,Canta
 }
 
 .doc-action{
-  color:var(--primary);
+  color:var(--accent-teal);
   text-decoration:none;
   cursor:pointer;
   font-size:12px;
@@ -228,8 +282,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Ubuntu,Canta
 }
 
 .doc-action:hover{
-  background:rgba(51, 111, 81, 0.1);
-  color:var(--primary-dark);
+  background:rgba(74,157,168, 0.1);
+  color:var(--primary);
 }
 
 .empty{color:#627085;font-size:12px;padding:20px 0;text-align:center}
@@ -239,7 +293,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Ubuntu,Canta
 /* Right: Generation */
 .console{padding:14px 16px;overflow:auto}
 .section{background:#fff;border:1px solid var(--hair);border-radius:12px;padding:12px;margin-bottom:12px}
-.section h3{font-size:14px;margin-bottom:8px}
+.section h3{font-size:14px;margin-bottom:8px;color:var(--primary)}
 .row{display:flex;gap:12px;align-items:center}
 .field{flex:1;min-width: 0;}
 
@@ -257,24 +311,23 @@ select, textarea {
 /* Specific styling for the area/topic row */
 .row {
   display: flex;
-  gap: 8px;  /* Reduced gap */
+  gap: 8px;
   align-items: center;
 }
 
 .row .field {
   flex: 1;
-  min-width: 140px;  /* Ensure minimum width */
+  min-width: 140px;
 }
 
 .row select {
   font-size: 13px;
-  padding: 8px 8px;  /* Slightly less horizontal padding */
+  padding: 8px 8px;
   min-width: 140px;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
 
-/* Make the generate button smaller to give selects more room */
 .row .btn {
   flex-shrink: 0;
   padding: 8px 14px;
@@ -288,8 +341,8 @@ select, textarea {
 .section.ctx-compact .ctx-label{font-size:11px;font-weight:700;color:#4a5866;margin-bottom:6px}
 .section.ctx-compact .seg{display:inline-flex;gap:4px;background:#f6f7f9;border:1px solid var(--border);border-radius:14px;padding:2px}
 .section.ctx-compact .seg-option{font-size:11px;padding:4px 8px;border-radius:12px;border:0;background:transparent;cursor:pointer;transition:all 0.2s ease}
-.section.ctx-compact .seg-option.is-active{background:var(--primary);color:#fff;box-shadow:0 0 0 1px var(--primary) inset}
-.section.ctx-compact .seg-option:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+.section.ctx-compact .seg-option.is-active{background:var(--accent-teal);color:#fff;box-shadow:0 0 0 1px var(--accent-teal) inset}
+.section.ctx-compact .seg-option:focus-visible{outline:2px solid var(--accent-teal);outline-offset:2px}
 .ctx-summary{margin-top:6px;font-size:11px;color:#6c7a86}
 
 /* Updated Collapsible Toast Notification */
@@ -338,7 +391,7 @@ select, textarea {
   width: 16px;
   height: 16px;
   border: 2px solid var(--hair);
-  border-left-color: var(--primary);
+  border-left-color: var(--accent-teal);
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
@@ -421,14 +474,14 @@ dialog#viewer {
 }
 
 dialog::backdrop {
-  background: rgba(0,0,0,.55);
+  background: rgba(27,43,68,.75);
 }
 
 .viewer-head {
   display:flex;
   justify-content:space-between;
   align-items:center;
-  background:var(--ink);
+  background:var(--primary);
   color:#fff;
   padding:10px 14px;
 }
@@ -441,9 +494,9 @@ dialog::backdrop {
 }
 
 .viewer-btn, .viewer-close{
-  border:0;
-  background:rgba(255,255,255,0.1);
-  color:#fff;
+  border:1px solid var(--accent-gold);
+  background:transparent;
+  color:var(--accent-gold);
   border-radius:8px;
   padding:6px 12px;
   cursor:pointer;
@@ -453,7 +506,8 @@ dialog::backdrop {
 }
 
 .viewer-btn:hover, .viewer-close:hover{
-  background:rgba(255,255,255,0.15);
+  background:var(--accent-gold);
+  color:#fff;
 }
 
 .viewer-content {
@@ -472,7 +526,7 @@ dialog::backdrop {
 .viewer-content h1 {
   font-size: 32px;
   color: var(--primary);
-  border-bottom: 3px solid var(--primary);
+  border-bottom: 3px solid var(--accent-teal);
   padding-bottom: 16px;
   margin: 40px 0 24px 0;
   font-weight: 700;
@@ -483,7 +537,7 @@ dialog::backdrop {
   color: var(--ink);
   margin: 32px 0 16px 0;
   font-weight: 600;
-  border-left: 4px solid var(--primary);
+  border-left: 4px solid var(--accent-teal);
   padding-left: 16px;
 }
 
@@ -505,8 +559,9 @@ dialog::backdrop {
 }
 
 .viewer-content table th {
-  background: var(--soft);
-  border: 1px solid var(--border);
+  background: var(--primary);
+  color: #fff;
+  border: 1px solid var(--primary-light);
   padding: 14px 12px;
   text-align: left;
   font-weight: 600;
@@ -545,21 +600,20 @@ dialog::backdrop {
   .shell{grid-template-columns:1fr}
   .right{display:none}
 }
-/* Fix right panel scrolling */
+
 .right {
   background: var(--soft);
   display: flex;
   flex-direction: column;
-  overflow: hidden; /* Prevent scrolling */
+  overflow: hidden;
 }
 
 .console {
   padding: 14px 16px;
-  overflow: visible; /* Don't scroll the form */
+  overflow: visible;
   flex: 1;
 }
 
-/* Style for generate button row */
 .generate-row {
   margin-top: 12px;
   display: flex;
