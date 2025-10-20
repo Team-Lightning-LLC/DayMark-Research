@@ -9,18 +9,15 @@ class ResearchEngine {
   }
 
   setupEventListeners() {
-    // Toast close button
     document.getElementById('toastClose')?.addEventListener('click', () => {
       this.cancelResearch();
     });
 
-    // Toast minimize button
     document.getElementById('toastMinimize')?.addEventListener('click', () => {
       this.toggleMinimize();
     });
   }
 
-  // Toggle minimize state
   toggleMinimize() {
     const toast = document.getElementById('generationToast');
     const minimizeBtn = document.getElementById('toastMinimize');
@@ -33,7 +30,7 @@ class ResearchEngine {
       minimizeBtn.title = 'Expand';
     } else {
       toast.classList.remove('minimized');
-      minimizeBtn.textContent = '−';
+      minimizeBtn.textContent = '-';
       minimizeBtn.title = 'Minimize';
     }
   }
@@ -41,7 +38,7 @@ class ResearchEngine {
   // Start research generation
   async startResearch(researchData) {
     try {
-      // Build research prompt
+      // Build research prompt with labels
       const prompt = this.buildResearchPrompt(researchData);
       
       // Execute async research
@@ -72,9 +69,21 @@ class ResearchEngine {
     }
   }
 
-  // Build research prompt from parameters
-  buildResearchPrompt(researchData) {
-    return `${researchData.topic}: Depth - ${researchData.params.depth}, Rigor - ${researchData.params.rigor}, Focus - ${researchData.params.focus}`;
+  // Build research prompt from parameters WITH LABELS
+  buildResearchPrompt(data) {
+    return `
+Analysis Type: ${data.capability}
+Framework: ${data.framework}
+
+Context:
+${data.context}
+
+Research Parameters:
+- Scope: ${data.modifiers.scope}
+- Depth: ${data.modifiers.depth}
+- Rigor: ${data.modifiers.rigor}
+- Perspective: ${data.modifiers.perspective}
+    `.trim();
   }
 
   // Show generation progress toast
@@ -84,18 +93,16 @@ class ResearchEngine {
     const subtitle = toast.querySelector('.toast-subtitle');
     const details = toast.querySelector('.toast-details');
     
-    // Build descriptive content
-    const researchTitle = `Generating ${this.currentJob.data.topic}`;
-    const researchDetails = `${this.currentJob.data.params.depth} • ${this.currentJob.data.params.rigor} • ${this.currentJob.data.params.focus}`;
+    const researchTitle = `Generating ${this.currentJob.data.framework}`;
+    const researchDetails = `${this.currentJob.data.modifiers.scope} - ${this.currentJob.data.modifiers.depth} - ${this.currentJob.data.modifiers.rigor}`;
     
     if (title) title.textContent = researchTitle;
     if (subtitle) subtitle.innerHTML = `Estimated time: <span id="timeRemaining">5:00</span>`;
     if (details) details.textContent = researchDetails;
     
-    // Reset minimize state
     this.isMinimized = false;
     toast.classList.remove('minimized');
-    document.getElementById('toastMinimize').textContent = '−';
+    document.getElementById('toastMinimize').textContent = '-';
     
     toast.style.display = 'block';
   }
@@ -130,24 +137,20 @@ class ResearchEngine {
   startPeriodicRefresh() {
     console.log('Starting periodic refresh of document library...');
     
-    // Refresh immediately
     this.refreshDocumentLibrary();
     
-    // Then refresh every 7 minutes
     this.refreshTimer = setInterval(() => {
       this.refreshDocumentLibrary();
     }, 7 * 60 * 1000);
     
-    // Update toast content for refresh mode
     const title = document.querySelector('.toast-title');
     const subtitle = document.querySelector('.toast-subtitle');
     const details = document.querySelector('.toast-details');
     
-    if (title) title.textContent = `${this.currentJob.data.topic} In Progress`;
+    if (title) title.textContent = `${this.currentJob.data.framework} In Progress`;
     if (subtitle) subtitle.textContent = 'Checking every 7 minutes...';
     if (details) details.textContent = 'You can continue using the interface normally.';
     
-    // Auto-minimize after 10 seconds to get out of the way
     setTimeout(() => {
       if (!this.isMinimized) {
         this.toggleMinimize();
@@ -182,21 +185,19 @@ class ResearchEngine {
     const details = toast.querySelector('.toast-details');
     const spinner = document.querySelector('.toast-spinner');
     
-    const completionTitle = `${this.currentJob.data.topic} Complete!`;
+    const completionTitle = `${this.currentJob.data.framework} Complete!`;
     
     if (title) title.textContent = completionTitle;
     if (subtitle) subtitle.textContent = 'Ready to view';
     if (details) details.textContent = 'Your document library has been updated.';
     if (spinner) spinner.style.display = 'none';
     
-    // Expand if minimized to show completion
     if (this.isMinimized) {
       this.toggleMinimize();
     }
     
     toast.style.display = 'block';
     
-    // Hide after 4 seconds
     setTimeout(() => {
       this.finishResearch();
     }, 4000);
@@ -244,7 +245,6 @@ class ResearchEngine {
     toast.style.display = 'none';
     toast.classList.remove('minimized');
     
-    // Reset toast content
     const title = toast.querySelector('.toast-title');
     const subtitle = toast.querySelector('.toast-subtitle');
     const details = toast.querySelector('.toast-details');
@@ -258,16 +258,24 @@ class ResearchEngine {
 
   // Reset form to initial state
   resetForm() {
-    const areaSelect = document.getElementById('area');
-    const topicSelect = document.getElementById('narrow');
+    const capabilitySelect = document.getElementById('capability');
+    const frameworkSelect = document.getElementById('framework');
+    const contextInput = document.getElementById('contextInput');
     const createBtn = document.getElementById('createBtn');
+    const charCount = document.getElementById('charCount');
     
-    if (areaSelect) areaSelect.value = '';
-    if (topicSelect) {
-      topicSelect.innerHTML = '<option value="">Choose a topic…</option>';
-      topicSelect.disabled = true;
+    if (capabilitySelect) capabilitySelect.value = '';
+    if (frameworkSelect) {
+      frameworkSelect.innerHTML = '<option value="">Choose capability first...</option>';
+      frameworkSelect.disabled = true;
+    }
+    if (contextInput) {
+      contextInput.value = '';
+      contextInput.rows = 3;
+      contextInput.placeholder = "Select a framework above to begin...";
     }
     if (createBtn) createBtn.disabled = true;
+    if (charCount) charCount.textContent = '0';
   }
 
   // Show error message
