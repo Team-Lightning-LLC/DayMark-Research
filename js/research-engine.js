@@ -5,7 +5,11 @@ class ResearchEngine {
     this.countdownTimer = null;
     this.refreshTimer = null;
     this.isMinimized = false;
+    this.STORAGE_KEY = 'deepresearch_active_job';
     this.setupEventListeners();
+    
+    // Check for existing job on page load
+    this.restoreJobFromStorage();
   }
 
   setupEventListeners() {
@@ -35,13 +39,117 @@ class ResearchEngine {
     }
   }
 
+  // Save job state to localStorage
+  saveJobState(researchData) {
+    const jobState = {
+      capability: researchData.capability,
+      framework: researchData.framework,
+      scope: researchData.modifiers.scope,
+      depth: researchData.modifiers.depth,
+      rigor: researchData.modifiers.rigor,
+      perspective: researchData.modifiers.perspective,
+      startTime: Date.now()
+    };
+    
+    try {
+      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(jobState));
+      console.log('Job state saved to localStorage');
+    } catch (error) {
+      console.error('Failed to save job state:', error);
+    }
+  }
+
+  // Load job state from localStorage
+  loadJobState() {
+    try {
+      const saved = localStorage.getItem(this.STORAGE_KEY);
+      if (!saved) return null;
+      
+      const jobState = JSON.parse(saved);
+      const elapsed = (Date.now() - jobState.startTime) / 1000; // seconds
+      
+      // If older than 30 minutes, clear it
+      if (elapsed > 1800) {
+        console.log('Job state expired, clearing...');
+        this.clearJobState();
+        return null;
+      }
+      
+      return { ...jobState, elapsed };
+    } catch (error) {
+      console.error('Failed to load job state:', error);
+      this.clearJobState();
+      return null;
+    }
+  }
+
+  // Clear job state from localStorage
+  clearJobState() {
+    try {
+      localStorage.removeItem(this.STORAGE_KEY);
+      console.log('Job state cleared from localStorage');
+    } catch (error) {
+      console.error('Failed to clear job state:', error);
+    }
+  }
+
+  // Restore job from storage on page load
+  restoreJobFromStorage() {
+    const savedJob = this.loadJobState();
+    if (!savedJob) return;
+    
+    console.log('Restoring research job from storage...', savedJob);
+    
+    // Reconstruct job data
+    this.currentJob = {
+      data: {
+        capability: savedJob.capability,
+        framework: savedJob.framework,
+        modifiers: {
+          scope: savedJob.scope,
+          depth: savedJob.depth,
+          rigor: savedJob.rigor,
+          perspective: savedJob.perspective
+        }
+      },
+      startTime: savedJob.startTime
+    };
+    
+    const elapsed = savedJob.elapsed;
+    
+    if (elapsed < 300) {
+      // Still in countdown phase (0-5 minutes)
+      const remaining = 300 - elapsed;
+      console.log(`Restoring countdown with ${Math.floor(remaining)} seconds remaining`);
+      this.showGenerationProgress();
+      this.startCountdownTimer(remaining);
+      
+      // Schedule aggressive polling after remaining countdown time
+      setTimeout(() => {
+        this.startAggressivePolling();
+      }, remaining * 1000);
+      
+    } else if (elapsed < 420) {
+      // In aggressive polling phase (5-7 minutes)
+      const pollsElapsed = Math.floor((elapsed - 300) / 10);
+      const pollsRemaining = 12 - pollsElapsed;
+      console.log(`Restoring aggressive polling with ${pollsRemaining} polls remaining`);
+      this.showGenerationProgress();
+      this.startAggressivePolling(pollsRemaining);
+      
+    } else {
+      // Past 7 minutes, use slow polling
+      console.log('Past aggressive polling window, entering slow polling mode');
+      this.showGenerationProgress();
+      this.startSlowPolling();
+    }
+  }
+
   // Start research generation
   async startResearch(researchData) {
     try {
-      // Build research prompt with labels
       const prompt = this.buildResearchPrompt(researchData);
       
-      // Execute async research
       const jobResponse = await vertesiaAPI.executeAsync({
         Task: prompt
       });
@@ -52,19 +160,20 @@ class ResearchEngine {
         startTime: Date.now()
       };
 
-      // Show generation timer
+      // Save to localStorage
+      this.saveJobState(researchData);
+
       this.showGenerationProgress();
-      
-      // Start countdown timer
       this.startCountdownTimer();
       
-      // Start periodic refresh after 7 minutes
+      // Start aggressive polling after 5 minutes
       setTimeout(() => {
-        this.startPeriodicRefresh();
-      }, 7 * 60 * 1000);
+        this.startAggressivePolling();
+      }, 5 * 60 * 1000);
 
     } catch (error) {
       console.error('Failed to start research:', error);
+      this.clearJobState();
       this.showError('Failed to start research generation. Please try again.');
     }
   }
@@ -102,14 +211,15 @@ Research Parameters:
     
     this.isMinimized = false;
     toast.classList.remove('minimized');
-    document.getElementById('toastMinimize').textContent = '-';
+    const minimizeBtn = document.getElementById('toastMinimize');
+    if (minimizeBtn) minimizeBtn.textContent = '-';
     
     toast.style.display = 'block';
   }
 
-  // Start countdown timer
-  startCountdownTimer() {
-    let timeLeft = CONFIG.GENERATION.ESTIMATED_TIME_MINUTES * 60;
+  // Start countdown timer with optional starting time
+  startCountdownTimer(startSeconds = 300) {
+    let timeLeft = Math.floor(startSeconds);
     
     this.countdownTimer = setInterval(() => {
       const minutes = Math.floor(timeLeft / 60);
@@ -125,7 +235,7 @@ Research Parameters:
         clearInterval(this.countdownTimer);
         const subtitle = document.querySelector('.toast-subtitle');
         if (subtitle) {
-          subtitle.textContent = 'Finalizing research...';
+          subtitle.textContent = 'Checking for completion...';
         }
       }
       
@@ -133,16 +243,48 @@ Research Parameters:
     }, 1000);
   }
 
-  // Start periodic refresh of document library
-  startPeriodicRefresh() {
-    console.log('Starting periodic refresh of document library...');
+  // Start aggressive polling (every 10 seconds for 2 minutes)
+  startAggressivePolling(maxPolls = 12) {
+    console.log('Starting aggressive polling (every 10 seconds for 2 minutes)...');
     
+    // Clear countdown timer if still running
+    if (this.countdownTimer) {
+      clearInterval(this.countdownTimer);
+      this.countdownTimer = null;
+    }
+    
+    // Check immediately
     this.refreshDocumentLibrary();
+    
+    let pollCount = 0;
+    
+    this.refreshTimer = setInterval(() => {
+      this.refreshDocumentLibrary();
+      pollCount++;
+      
+      if (pollCount >= maxPolls) {
+        // Switch to slow polling after reaching max polls
+        clearInterval(this.refreshTimer);
+        this.startSlowPolling();
+      }
+    }, 10000); // 10 seconds
+    
+    // Update UI
+    const subtitle = document.querySelector('.toast-subtitle');
+    if (subtitle) {
+      subtitle.textContent = 'Checking for completion...';
+    }
+  }
+
+  // Start slow polling (every 7 minutes)
+  startSlowPolling() {
+    console.log('Switching to slow polling (every 7 minutes)...');
     
     this.refreshTimer = setInterval(() => {
       this.refreshDocumentLibrary();
     }, 7 * 60 * 1000);
     
+    // Update UI
     const title = document.querySelector('.toast-title');
     const subtitle = document.querySelector('.toast-subtitle');
     const details = document.querySelector('.toast-details');
@@ -151,6 +293,7 @@ Research Parameters:
     if (subtitle) subtitle.textContent = 'Checking every 7 minutes...';
     if (details) details.textContent = 'You can continue using the interface normally.';
     
+    // Auto-minimize to get out of the way
     setTimeout(() => {
       if (!this.isMinimized) {
         this.toggleMinimize();
@@ -215,6 +358,7 @@ Research Parameters:
       this.countdownTimer = null;
     }
     
+    this.clearJobState();
     this.hideToast();
     this.resetForm();
     this.currentJob = null;
@@ -233,6 +377,7 @@ Research Parameters:
       this.countdownTimer = null;
     }
     
+    this.clearJobState();
     this.hideToast();
     this.resetForm();
     this.currentJob = null;
