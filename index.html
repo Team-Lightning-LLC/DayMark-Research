@@ -62,44 +62,58 @@
 
 <!-- Right: Generation -->
 <main class="right">
-  <div class="panel-head"><span class="panel-title" id="centerTitle">Create Research</span></div>
+  <div class="panel-head"><span class="panel-title">Create Research</span></div>
   <div class="console">
+    
+    <!-- Research Capability -->
     <div class="section">
-      <h3>Research Area & Topic</h3>
-      <div class="row">
-        <div class="field">
-          <select id="area">
-            <option value="" selected>Select area…</option>
-            <option value="Markets">Markets</option>
-            <option value="Sectors">Sectors</option>
-            <option value="Assets">Assets</option>
-            <option value="Concepts">Concepts</option>
-          </select>
-        </div>
-        <div class="field">
-          <select id="narrow" disabled>
-            <option value="">Choose a topic…</option>
-          </select>
-        </div>
+      <h3>Research Capability</h3>
+      <div class="field-group">
+        <select id="capability">
+          <option value="">Select capability...</option>
+          <option value="Traditional Analysis">Traditional Analysis</option>
+          <optgroup label="Advanced Research">
+            <option value="Advanced Research - Ecosystem">Ecosystem Research</option>
+            <option value="Advanced Research - Narrative">Narrative Research</option>
+            <option value="Advanced Research - Comparative">Comparative Research</option>
+            <option value="Advanced Research - Scenario">Scenario Research</option>
+            <option value="Advanced Research - Intelligence">Intelligence Research</option>
+          </optgroup>
+          <option value="Custom Research">Custom Research</option>
+        </select>
       </div>
-      <div class="generate-row">
-        <button class="btn primary" id="createBtn" disabled>Generate</button>
+      <div class="field-group">
+        <select id="framework" disabled>
+          <option value="">Choose capability first...</option>
+        </select>
       </div>
-      <div class="hint" style="margin-top:6px"></div>
     </div>
 
-    <!-- Research Parameters -->
-    <div class="section ctx-compact" id="ctxSection">
-      <div class="ctx-head"><h3>Research Parameters</h3></div>
+    <!-- Additional Context -->
+    <div class="section">
+      <h3>Additional Context</h3>
+      <textarea 
+        id="contextInput" 
+        rows="3" 
+        placeholder="Select a framework above to begin..."
+        maxlength="1000">
+      </textarea>
+      <div class="char-count"><span id="charCount">0</span> / 1000</div>
+    </div>
+
+    <!-- Research Modifiers -->
+    <div class="section">
+      <h3>Research Modifiers</h3>
       <div class="ctx-grid">
         <div class="ctx-block">
           <div class="ctx-label">Scope</div>
-           <div class="seg" role="radiogroup" aria-label="Research Scope">
-  <button class="seg-option is-active" role="radio" aria-checked="true" data-group="scope" data-value="Assets">Assets</button>
-  <button class="seg-option" role="radio" aria-checked="false" data-group="scope" data-value="Sector">Sector</button>
-  <button class="seg-option" role="radio" aria-checked="false" data-group="scope" data-value="Market">Market</button>
-</div>
-      </div>
+          <div class="seg" role="radiogroup" aria-label="Scope">
+            <button type="button" class="seg-option is-active" data-group="scope" data-value="Assets">Assets</button>
+            <button type="button" class="seg-option" data-group="scope" data-value="Sector">Sector</button>
+            <button type="button" class="seg-option" data-group="scope" data-value="Market">Market</button>
+          </div>
+        </div>
+        <div class="ctx-block">
           <div class="ctx-label">Depth</div>
           <div class="seg" role="radiogroup" aria-label="Depth">
             <button type="button" class="seg-option is-active" data-group="depth" data-value="High-Level">High-Level</button>
@@ -116,18 +130,22 @@
           </div>
         </div>
         <div class="ctx-block">
-          <div class="ctx-label">Focus</div>
-          <div class="seg" role="radiogroup" aria-label="Focus">
-            <button type="button" class="seg-option is-active" data-group="focus" data-value="Investment Research">Investment</button>
-            <button type="button" class="seg-option" data-group="focus" data-value="Educational Summary">Educational</button>
-            <button type="button" class="seg-option" data-group="focus" data-value="Technical Analysis">Technical</button>
+          <div class="ctx-label">Perspective</div>
+          <div class="seg" role="radiogroup" aria-label="Perspective">
+            <button type="button" class="seg-option is-active" data-group="perspective" data-value="Investment">Investment</button>
+            <button type="button" class="seg-option" data-group="perspective" data-value="Educational">Educational</button>
+            <button type="button" class="seg-option" data-group="perspective" data-value="Technical">Technical</button>
           </div>
         </div>
-      <div id="ctxSummary" class="ctx-summary">Assets • High-Level • Essential • Investment</div>
+      </div>
+    </div>
+
+    <!-- Generate Button -->
+    <div class="generate-row">
+      <button class="btn primary" id="createBtn" disabled>Generate Research</button>
     </div>
   </div>
 </main>
-  </section>
 
 <!-- Generation Progress Toast - Collapsible -->
 <div id="generationToast" class="toast-notification">
