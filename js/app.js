@@ -17,16 +17,25 @@ class DeepResearchApp {
   }
 
   setupEventListeners() {
-    // Area/Topic selection
-    const areaSelect = document.getElementById('area');
-    const topicSelect = document.getElementById('narrow');
+    // Capability/Framework cascade
+    const capabilitySelect = document.getElementById('capability');
+    const frameworkSelect = document.getElementById('framework');
+    const contextInput = document.getElementById('contextInput');
     const createBtn = document.getElementById('createBtn');
 
-    areaSelect?.addEventListener('change', () => {
-      this.updateTopicOptions();
+    capabilitySelect?.addEventListener('change', () => {
+      this.updateFrameworkOptions();
+      this.updateCreateButton();
     });
 
-    topicSelect?.addEventListener('change', () => {
+    frameworkSelect?.addEventListener('change', () => {
+      this.updateContextPlaceholder();
+      this.applyFrameworkDefaults();
+      this.updateCreateButton();
+    });
+
+    contextInput?.addEventListener('input', (e) => {
+      this.updateCharacterCount();
       this.updateCreateButton();
     });
 
@@ -59,6 +68,105 @@ class DeepResearchApp {
     this.setupDocumentActions();
   }
 
+  // Update framework dropdown based on selected capability
+  updateFrameworkOptions() {
+    const capabilitySelect = document.getElementById('capability');
+    const frameworkSelect = document.getElementById('framework');
+    
+    if (!capabilitySelect || !frameworkSelect) return;
+    
+    const selectedCapability = capabilitySelect.value;
+    frameworkSelect.innerHTML = '<option value="">Select framework...</option>';
+    
+    const frameworks = CONFIG.RESEARCH_CAPABILITIES[selectedCapability] || [];
+    frameworks.forEach(framework => {
+      const option = document.createElement('option');
+      option.value = framework;
+      option.textContent = framework;
+      frameworkSelect.appendChild(option);
+    });
+    
+    frameworkSelect.disabled = frameworks.length === 0;
+  }
+
+  // Update context placeholder based on selected framework
+  updateContextPlaceholder() {
+    const frameworkSelect = document.getElementById('framework');
+    const contextInput = document.getElementById('contextInput');
+    
+    if (!frameworkSelect || !contextInput) return;
+    
+    const selectedFramework = frameworkSelect.value;
+    const hint = CONFIG.CONTEXT_HINTS[selectedFramework];
+    
+    contextInput.placeholder = hint || "Describe your research needs in detail...";
+    
+    // Expand textarea for Custom Framework
+    if (selectedFramework === "Custom Framework") {
+      contextInput.rows = 5;
+    } else {
+      contextInput.rows = 3;
+    }
+  }
+
+  // Apply framework defaults to modifiers
+  applyFrameworkDefaults() {
+    const frameworkSelect = document.getElementById('framework');
+    if (!frameworkSelect) return;
+    
+    const selectedFramework = frameworkSelect.value;
+    const defaults = CONFIG.FRAMEWORK_DEFAULTS[selectedFramework];
+    
+    if (!defaults) return;
+    
+    // Apply each default
+    Object.keys(defaults).forEach(group => {
+      const value = defaults[group];
+      const seg = document.querySelector(`[data-group="${group}"]`)?.closest('.seg');
+      
+      if (seg) {
+        // Deactivate all options in this group
+        seg.querySelectorAll('.seg-option').forEach(option => {
+          option.classList.remove('is-active');
+          option.setAttribute('aria-checked', 'false');
+        });
+        
+        // Activate the default option
+        const defaultOption = seg.querySelector(`[data-value="${value}"]`);
+        if (defaultOption) {
+          defaultOption.classList.add('is-active');
+          defaultOption.setAttribute('aria-checked', 'true');
+        }
+      }
+    });
+  }
+
+  // Update character count
+  updateCharacterCount() {
+    const contextInput = document.getElementById('contextInput');
+    const charCount = document.getElementById('charCount');
+    
+    if (!contextInput || !charCount) return;
+    
+    charCount.textContent = contextInput.value.length;
+  }
+
+  // Update create button state
+  updateCreateButton() {
+    const capabilitySelect = document.getElementById('capability');
+    const frameworkSelect = document.getElementById('framework');
+    const contextInput = document.getElementById('contextInput');
+    const createBtn = document.getElementById('createBtn');
+    
+    if (!capabilitySelect || !frameworkSelect || !contextInput || !createBtn) return;
+    
+    const hasCapability = capabilitySelect.value !== "";
+    const hasFramework = frameworkSelect.value !== "";
+    const hasContext = contextInput.value.trim().length >= 10;
+    
+    createBtn.disabled = !(hasCapability && hasFramework && hasContext);
+  }
+
   // Setup segmented control interactions
   setupSegmentedControls() {
     document.addEventListener('click', (e) => {
@@ -76,8 +184,6 @@ class DeepResearchApp {
       
       btn.classList.add('is-active');
       btn.setAttribute('aria-checked', 'true');
-      
-      this.updateContextSummary();
     });
 
     // Keyboard navigation
@@ -98,7 +204,6 @@ class DeepResearchApp {
       options[nextIndex].classList.add('is-active');
       options[nextIndex].focus();
       
-      this.updateContextSummary();
       e.preventDefault();
     });
   }
@@ -126,75 +231,6 @@ class DeepResearchApp {
     });
   }
 
-  // Update topic dropdown based on selected area
-  updateTopicOptions() {
-    const areaSelect = document.getElementById('area');
-    const topicSelect = document.getElementById('narrow');
-    
-    if (!areaSelect || !topicSelect) return;
-    
-    const selectedArea = areaSelect.value;
-    topicSelect.innerHTML = '<option value="">Choose a topic…</option>';
-    
-    const topics = CONFIG.RESEARCH_TOPICS[selectedArea] || [];
-    topics.forEach(topic => {
-      const option = document.createElement('option');
-      option.value = topic;
-      option.textContent = topic;
-      topicSelect.appendChild(option);
-    });
-    
-    topicSelect.disabled = topics.length === 0;
-    this.updateCreateButton();
-  }
-
-  // Update create button state
-  updateCreateButton() {
-    const areaSelect = document.getElementById('area');
-    const topicSelect = document.getElementById('narrow');
-    const createBtn = document.getElementById('createBtn');
-    
-    if (!areaSelect || !topicSelect || !createBtn) return;
-    
-    const hasAreaAndTopic = areaSelect.value && topicSelect.value;
-    createBtn.disabled = !hasAreaAndTopic;
-  }
-
-  // Update context summary
-  updateContextSummary() {
-    const summary = document.getElementById('ctxSummary');
-    if (!summary) return;
-    
-    const params = this.getResearchParameters();
-    const labels = {
-      // Depth
-      'High-Level': 'High-Level',
-      'Focused': 'Focused', 
-      'Comprehensive': 'Comprehensive',
-      // Rigor
-      'Essential Points': 'Essential',
-      'Detailed Analysis': 'Detailed',
-      'Exhaustive Research': 'Exhaustive',
-      // Focus
-      'Investment Research': 'Investment',
-      'Educational Summary': 'Educational',
-      'Technical Analysis': 'Technical',
-      // Scope
-      'Assets': 'Assets',
-      'Sector': 'Sector',
-      'Market': 'Market'
-    };
-    
-    const summaryText = [
-      labels[params.scope],
-      labels[params.depth],
-      labels[params.rigor], 
-      labels[params.focus]
-    ].filter(Boolean).join(' • ');
-    
-    summary.textContent = summaryText;
-  }
-
   // Get current research parameters
   getResearchParameters() {
     const params = {};
@@ -215,26 +251,27 @@ class DeepResearchApp {
 
   // Start research generation
   async startResearch() {
-    const areaSelect = document.getElementById('area');
-    const topicSelect = document.getElementById('narrow');
+    const capabilitySelect = document.getElementById('capability');
+    const frameworkSelect = document.getElementById('framework');
+    const contextInput = document.getElementById('contextInput');
     
-    if (!areaSelect?.value || !topicSelect?.value) return;
+    if (!capabilitySelect?.value || !frameworkSelect?.value || !contextInput?.value) return;
     
     const researchData = {
-      area: areaSelect.value,
-      topic: topicSelect.value,
-      params: this.getResearchParameters()
+      capability: capabilitySelect.value,
+      framework: frameworkSelect.value,
+      context: contextInput.value.trim(),
+      modifiers: this.getResearchParameters()
     };
     
     await researchEngine.startResearch(researchData);
   }
 
-  // Load all documents from API - no filtering
+  // Load all documents from API
   async loadDocuments() {
     try {
       console.log('Loading all documents...');
       
-      // Direct API call
       const response = await fetch(`${CONFIG.VERTESIA_API_BASE}/objects?limit=1000&offset=0`, {
         method: 'GET',
         headers: {
@@ -250,7 +287,6 @@ class DeepResearchApp {
       const allObjects = await response.json();
       console.log('Loaded all objects:', allObjects.length);
       
-      // Transform each document without filtering
       this.documents = [];
       for (const obj of allObjects) {
         try {
@@ -261,7 +297,6 @@ class DeepResearchApp {
         }
       }
       
-      // Sort by date
       this.documents.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
       
       console.log('Final documents array:', this.documents.length);
@@ -274,10 +309,8 @@ class DeepResearchApp {
 
   // Transform API object to document format
   transformDocument(obj) {
-    // Clean up the title - remove common prefixes and make readable
     let title = obj.name || 'Untitled';
     
-    // Remove common prefixes
     const prefixes = ['DeepResearch_', 'Deep Research_', 'deep research_', 'DEEP RESEARCH_', 'DEEP RESEARCH:'];
     prefixes.forEach(prefix => {
       if (title.startsWith(prefix)) {
@@ -285,43 +318,13 @@ class DeepResearchApp {
       }
     });
     
-    // Replace underscores and hyphens with spaces
     title = title.replace(/[_-]/g, ' ').trim();
-    
-    // Try to extract area/topic from the name or properties
-    let area = 'Documents';
-    let topic = 'General';
-    
-    // Check if name contains known areas/topics
-    const areas = Object.keys(CONFIG.RESEARCH_TOPICS);
-    for (const areaName of areas) {
-      if (title.toLowerCase().includes(areaName.toLowerCase())) {
-        area = areaName;
-        break;
-      }
-    }
-    
-    // Check for specific topics
-    for (const [areaName, topics] of Object.entries(CONFIG.RESEARCH_TOPICS)) {
-      for (const topicName of topics) {
-        if (title.toLowerCase().includes(topicName.toLowerCase())) {
-          area = areaName;
-          topic = topicName;
-          break;
-        }
-      }
-      if (topic !== 'General') break;
-    }
-    
-    // Use properties if available
-    area = obj.properties?.research_area || area;
-    topic = obj.properties?.research_topic || topic;
     
     return {
       id: obj.id,
       title: title,
-      area: area,
-      topic: topic,
+      area: obj.properties?.capability || 'Research',
+      topic: obj.properties?.framework || 'General',
       created_at: obj.created_at || obj.properties?.generated_at || new Date().toISOString(),
       content_source: obj.content?.source,
       when: this.formatDate(obj.created_at || obj.properties?.generated_at)
@@ -344,10 +347,9 @@ class DeepResearchApp {
     }
   }
 
-  // Filter and render documents - Show all, only filter by search
+  // Filter and render documents
   filterAndRenderDocuments() {
     this.filteredDocuments = this.documents.filter(doc => {
-      // Only filter by search query, ignore area filters
       const matchesSearch = !this.searchQuery || 
         [doc.title, doc.area, doc.topic].some(field => 
           field && field.toLowerCase().includes(this.searchQuery)
@@ -359,7 +361,7 @@ class DeepResearchApp {
     this.renderDocuments();
   }
 
-  // Render document list - Updated without page counts, with download
+  // Render document list
   renderDocuments() {
     const docsPane = document.getElementById('docsPane');
     if (!docsPane) {
@@ -376,7 +378,7 @@ class DeepResearchApp {
       <div class="doc" data-doc-id="${doc.id}">
         <div class="doc-info">
           <div class="tt">${doc.title}</div>
-          <div class="meta">${doc.when} • ${doc.area} • ${doc.topic}</div>
+          <div class="meta">${doc.when} - ${doc.area} - ${doc.topic}</div>
         </div>
         <div class="actions">
           <button class="doc-action view-action">view</button>
@@ -395,7 +397,6 @@ class DeepResearchApp {
       const doc = this.documents.find(d => d.id === docId);
       if (!doc) return;
       
-      // Get document content
       const downloadResponse = await fetch(`${CONFIG.VERTESIA_API_BASE}/objects/download-url`, {
         method: 'POST',
         headers: {
@@ -414,7 +415,6 @@ class DeepResearchApp {
       
       const downloadData = await downloadResponse.json();
       
-      // Fetch the actual content
       const contentResponse = await fetch(downloadData.url);
       if (!contentResponse.ok) {
         throw new Error(`Failed to download content: ${contentResponse.statusText}`);
@@ -422,7 +422,6 @@ class DeepResearchApp {
       
       const content = await contentResponse.text();
       
-      // Open in markdown viewer
       markdownViewer.openViewer(content, doc.title);
       
     } catch (error) {
@@ -439,7 +438,6 @@ class DeepResearchApp {
       
       console.log('Downloading document:', doc.title);
       
-      // Get document content
       const downloadResponse = await fetch(`${CONFIG.VERTESIA_API_BASE}/objects/download-url`, {
         method: 'POST',
         headers: {
@@ -458,7 +456,6 @@ class DeepResearchApp {
       
       const downloadData = await downloadResponse.json();
       
-      // Fetch the content
       const contentResponse = await fetch(downloadData.url);
       if (!contentResponse.ok) {
         throw new Error(`Failed to download content: ${contentResponse.statusText}`);
@@ -466,7 +463,6 @@ class DeepResearchApp {
       
       const content = await contentResponse.text();
       
-      // Generate PDF using the markdown viewer
       await markdownViewer.generatePDFFromContent(content, doc.title);
       
     } catch (error) {
