@@ -167,18 +167,26 @@ class DeepResearchApp {
     
     const params = this.getResearchParameters();
     const labels = {
+      // Depth
       'High-Level': 'High-Level',
       'Focused': 'Focused', 
       'Comprehensive': 'Comprehensive',
+      // Rigor
       'Essential Points': 'Essential',
       'Detailed Analysis': 'Detailed',
       'Exhaustive Research': 'Exhaustive',
+      // Focus
       'Investment Research': 'Investment',
       'Educational Summary': 'Educational',
-      'Technical Analysis': 'Technical'
+      'Technical Analysis': 'Technical',
+      // Scope
+      'Assets': 'Assets',
+      'Sector': 'Sector',
+      'Market': 'Market'
     };
     
     const summaryText = [
+      labels[params.scope],
       labels[params.depth],
       labels[params.rigor], 
       labels[params.focus]
