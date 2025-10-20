@@ -64,91 +64,28 @@
 <main class="right">
   <div class="panel-head"><span class="panel-title" id="centerTitle">Create Research</span></div>
   <div class="console">
-    
-    <!-- Research Type Selection -->
     <div class="section">
-      <h3>Research Type</h3>
-      <div class="type-grid">
-        <button class="type-card" data-type="Evaluation">
-          <div class="type-icon">📊</div>
-          <div class="type-name">Evaluation</div>
-          <div class="type-desc">Company deep dives & analysis</div>
-        </button>
-        <button class="type-card" data-type="Comparative">
-          <div class="type-icon">⚖️</div>
-          <div class="type-name">Comparative</div>
-          <div class="type-desc">Multi-stock comparisons</div>
-        </button>
-        <button class="type-card" data-type="Scenarios">
-          <div class="type-icon">🎯</div>
-          <div class="type-name">Scenarios</div>
-          <div class="type-desc">What-if modeling</div>
-        </button>
-        <button class="type-card" data-type="Mapping">
-          <div class="type-icon">🗺️</div>
-          <div class="type-name">Mapping</div>
-          <div class="type-desc">Networks & relationships</div>
-        </button>
-        <button class="type-card" data-type="Narrative">
-          <div class="type-icon">📖</div>
-          <div class="type-name">Narrative</div>
-          <div class="type-desc">Stories & sentiment</div>
-        </button>
-        <button class="type-card" data-type="Historics">
-          <div class="type-icon">📅</div>
-          <div class="type-name">Historics</div>
-          <div class="type-desc">Patterns & precedents</div>
-        </button>
-        <button class="type-card" data-type="Concepts">
-          <div class="type-icon">💡</div>
-          <div class="type-name">Concepts</div>
-          <div class="type-desc">Educational topics</div>
-        </button>
-      </div>
-    </div>
-
-    <!-- Analysis Scale -->
-    <div class="section">
-      <h3>Analysis Scale</h3>
-      <div class="scale-container">
-        <div class="scale-track">
-          <button class="scale-stop" data-scale="Market">
-            <div class="scale-label">Market</div>
-            <div class="scale-hint">Macro trends</div>
-          </button>
-          <button class="scale-stop active" data-scale="Sector">
-            <div class="scale-label">Sector</div>
-            <div class="scale-hint">Industry focus</div>
-          </button>
-          <button class="scale-stop" data-scale="Asset">
-            <div class="scale-label">Asset</div>
-            <div class="scale-hint">Individual stocks</div>
-          </button>
+      <h3>Research Area & Topic</h3>
+      <div class="row">
+        <div class="field">
+          <select id="area">
+            <option value="" selected>Select area…</option>
+            <option value="Markets">Markets</option>
+            <option value="Sectors">Sectors</option>
+            <option value="Assets">Assets</option>
+            <option value="Concepts">Concepts</option>
+          </select>
+        </div>
+        <div class="field">
+          <select id="narrow" disabled>
+            <option value="">Choose a topic…</option>
+          </select>
         </div>
       </div>
-    </div>
-
-    <!-- Custom Query Input -->
-    <div class="section">
-      <h3>Research Query</h3>
-      <textarea 
-        id="customQuery" 
-        placeholder="Type your research question or specify stocks (e.g., 'Compare NVDA, AMD, INTC performance over 3 years' or 'What's driving semiconductor demand?')"
-        rows="4"
-      ></textarea>
-      <div class="query-hints">
-        <span class="hint-chip">💡 Try: Stock tickers (AAPL, MSFT)</span>
-        <span class="hint-chip">💡 Try: Time periods (last 5 years)</span>
-        <span class="hint-chip">💡 Try: Specific questions</span>
+      <div class="generate-row">
+        <button class="btn primary" id="createBtn" disabled>Generate</button>
       </div>
-    </div>
-
-    <!-- Quick Suggestions (optional - shows based on selected type) -->
-    <div class="section" id="suggestionsSection" style="display:none;">
-      <h3>Suggestions</h3>
-      <div class="suggestion-pills" id="suggestionPills">
-        <!-- Dynamically populated based on research type -->
-      </div>
+      <div class="hint" style="margin-top:6px"></div>
     </div>
 
     <!-- Research Parameters -->
@@ -166,29 +103,25 @@
         <div class="ctx-block">
           <div class="ctx-label">Rigor</div>
           <div class="seg" role="radiogroup" aria-label="Rigor">
-            <button type="button" class="seg-option" data-group="rigor" data-value="Essential">Essential</button>
-            <button type="button" class="seg-option is-active" data-group="rigor" data-value="Detailed">Detailed</button>
-            <button type="button" class="seg-option" data-group="rigor" data-value="Exhaustive">Exhaustive</button>
+            <button type="button" class="seg-option" data-group="rigor" data-value="Essential Points">Essential</button>
+            <button type="button" class="seg-option is-active" data-group="rigor" data-value="Detailed Analysis">Detailed</button>
+            <button type="button" class="seg-option" data-group="rigor" data-value="Exhaustive Research">Exhaustive</button>
           </div>
         </div>
         <div class="ctx-block">
           <div class="ctx-label">Focus</div>
           <div class="seg" role="radiogroup" aria-label="Focus">
-            <button type="button" class="seg-option is-active" data-group="focus" data-value="Investment">Investment</button>
-            <button type="button" class="seg-option" data-group="focus" data-value="Educational">Educational</button>
-            <button type="button" class="seg-option" data-group="focus" data-value="Technical">Technical</button>
+            <button type="button" class="seg-option is-active" data-group="focus" data-value="Investment Research">Investment</button>
+            <button type="button" class="seg-option" data-group="focus" data-value="Educational Summary">Educational</button>
+            <button type="button" class="seg-option" data-group="focus" data-value="Technical Analysis">Technical</button>
           </div>
         </div>
       </div>
       <div id="ctxSummary" class="ctx-summary">High-Level • Detailed • Investment</div>
     </div>
-
-    <!-- Generate Button -->
-    <div class="generate-row">
-      <button class="btn primary" id="createBtn">Generate Research</button>
-    </div>
   </div>
 </main>
+  </section>
 
 <!-- Generation Progress Toast - Collapsible -->
 <div id="generationToast" class="toast-notification">
