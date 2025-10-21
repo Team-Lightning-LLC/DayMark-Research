@@ -162,7 +162,7 @@ class DeepResearchApp {
     
     const hasCapability = capabilitySelect.value !== "";
     const hasFramework = frameworkSelect.value !== "";
-    const hasContext = contextInput.value.trim().length >= 10;
+    const hasContext = contextInput.value.trim().length >= 1;
     
     createBtn.disabled = !(hasCapability && hasFramework && hasContext);
   }
