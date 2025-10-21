@@ -181,17 +181,21 @@ class ResearchEngine {
   // Build research prompt from parameters WITH LABELS
   buildResearchPrompt(data) {
     return `
+    Utilize Web Search to develop a comprehensive report utilizing the following structure as a guide to provide users a complete and well informed research document: 
 Analysis Type: ${data.capability}
 Framework: ${data.framework}
 
-Context:
+Utilize this context to gain additional insight into your research topic:
 ${data.context}
 
-Research Parameters:
+The Research Parameters you must follow for this document are:
 - Scope: ${data.modifiers.scope}
 - Depth: ${data.modifiers.depth}
 - Rigor: ${data.modifiers.rigor}
 - Perspective: ${data.modifiers.perspective}
+
+All web searches acknolwedge must acknowledge that the current date is 10.21.2025 when searching for the most recent data. Search for the most recent data unless otherwise specified. Always capture the most recent reliable 
+data.
     `.trim();
   }
 
