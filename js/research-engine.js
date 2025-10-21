@@ -195,7 +195,7 @@ The Research Parameters you must follow for this document are:
 - Perspective: ${data.modifiers.perspective}
 
 All web searches acknolwedge must acknowledge that the current date is 10.21.2025 when searching for the most recent data. Search for the most recent data unless otherwise specified. Always capture the most recent reliable 
-data.
+data. The final output must be a document uploaded to the content object library.
     `.trim();
   }
 
