@@ -73,6 +73,20 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Ubuntu,Canta
 }
 
 /* Hero */
+.secondary-nav{
+  background: var(--primary);
+  border-bottom:1px solid rgba(255,255,255,.1);
+  padding:0 32px;
+  height:48px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  position:fixed;
+  left:0;
+  right:0;
+  top:72px;
+  z-index:999;
+  
 .research-banner::after {
   content: '';
   position: absolute;
